@@ -46,7 +46,7 @@ Description: GRAFT blockchain utilities (RTA alpha)
  This contains the graft-blockchain-* binaries for blockchain export and
  import.
 
-Package: graft-alpha-dev
+Package: libgraft-alpha-dev
 Architecture: all
 Section: libdevel
 Depends: libgraft-alpha0 (= ${binary:Version}), libboost-dev (>= 1.58), libboost-filesystem-dev,

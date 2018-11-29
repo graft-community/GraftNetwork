@@ -70,5 +70,7 @@ target_link_libraries(cryptonote_core
     ${Blocks}
     ${EXTRA_LIBRARIES})
 
+add_dependencies(cryptonote_core version)
+
 monero_install_headers(cryptonote_core
     ${cryptonote_core_private_headers} ${cryptonote_core_headers})

@@ -60,5 +60,7 @@ target_link_libraries(p2p
   PRIVATE
     ${EXTRA_LIBRARIES})
 
+add_dependencies(p2p version)
+
 monero_install_headers(p2p
     ${p2p_private_headers} ${p2p_headers})

@@ -1,3 +1,14 @@
+graft-alpha (1.3.3.alpha3.2-1) unstable; urgency=medium
+
+  [ Jason Rhinelander ]
+  * Add missing version dependency to p2p
+  * Add another missing dependency on version
+
+  [ Leny Kholodov ]
+  * Keep alive timeout for connection_base
+
+ -- Jason Rhinelander <jason@imaginary.ca>  Sat, 15 Dec 2018 11:10:01 -0400
+
 graft-alpha (1.3.3.alpha3.1-3) unstable; urgency=medium
 
   * Rename graft-alpha-dev -> libgraft-alpha-dev

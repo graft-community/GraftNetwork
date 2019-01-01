@@ -5351,7 +5351,10 @@ uint64_t wallet2::get_daemon_blockchain_target_height(string &err)
 uint64_t wallet2::get_approximate_blockchain_height() const
 {
   // time of begining: testnet: 2018-01-12, mainnet: 2018-01-18;
-  const time_t fork_time = m_testnet ? 1515715200 : 1516233600;
+  //
+  // RTA testnet drifted more than 30 days, however (due to periods of inactivity); recalculated
+  // this (fake) start time based on the actual height at 2019-01-01:
+  const time_t fork_time = m_testnet ? 1518668710 : 1516233600;
 
   // in case we not launched mainnet yet
   if (fork_time > time(nullptr))

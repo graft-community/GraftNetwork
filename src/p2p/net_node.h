@@ -229,6 +229,8 @@ namespace nodetool
     uint64_t get_max_hop(const std::list<std::string> &addresses);
     std::list<std::string> get_routes();
 
+    // sometimes supernode gets very busy so it doesn't respond within 1 second, increasing timeout to 3s
+    static constexpr size_t SUPERNODE_HTTP_TIMEOUT_MILLIS = 3 * 1000;
     template<class request_struct>
     int post_request_to_supernode(local_supernode &supernode, const std::string &method, const typename request_struct::request &body,
                                   const std::string &endpoint = std::string())
@@ -248,7 +250,7 @@ namespace nodetool
         typename request_struct::response resp = AUTO_VAL_INIT(resp);
         bool r = epee::net_utils::invoke_http_json(supernode.uri + uri,
                                                    req, resp, supernode.client,
-                                                   std::chrono::milliseconds(1*1000), "POST");
+                                                   std::chrono::milliseconds(SUPERNODE_HTTP_TIMEOUT_MILLIS), "POST");
         if (!r || resp.status == 0)
         {
             return 0;
@@ -346,7 +348,7 @@ namespace nodetool
     bool is_priority_node(const epee::net_utils::network_address& na);
     std::set<std::string> get_seed_nodes(bool testnet) const;
     bool connect_to_seed();
-    bool find_connection_id_by_peer_id(uint64_t id, boost::uuids::uuid &conn_id);
+    bool find_connection_id_by_peer(const peerlist_entry &pe, boost::uuids::uuid &conn_id);
     template <class Container>
     bool connect_to_peerlist(const Container& peers);
 

@@ -124,7 +124,7 @@ target_link_libraries(supernode
     ${EXTRA_LIBRARIES})
 add_dependencies(supernode version)
 
-if (NOT BUILD_GUI_DEPS)
+if (FALSE)
     set(supernode_rpc_sources
         main.cpp
         )

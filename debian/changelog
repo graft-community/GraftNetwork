@@ -1,3 +1,9 @@
+graft-alpha (1.3.4.1+gc1-1~bionic1) bionic; urgency=medium
+
+  * Reenable supernode directory, disable binary
+
+ -- Jason Rhinelander <jason@imaginary.ca>  Mon, 11 Feb 2019 19:20:33 -0400
+
 graft-alpha (1.3.4.1-1~1bionic1) bionic; urgency=medium
 
   New upstream release: Graft RTA alpha 4.1 (community edition).

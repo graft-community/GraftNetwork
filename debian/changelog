@@ -1,3 +1,63 @@
+graft-alpha (1.3.4.1-1~1bionic1) bionic; urgency=medium
+
+  New upstream release: Graft RTA alpha 4.1 (community edition).
+
+  [ Leny Kholodov ]
+  * Keep alive timeout for connection_base
+
+  [ Ilya Kitaev ]
+  * fix: Unxpected recv failed - increase http client timeout
+
+  [ Alexander Suprunenko ]
+  * Debug info extracted into separate files.
+  * after review. Default Release configuration rolled back.
+  * after review. release-static-linux-x86_64-debug-info rule added into makefile.
+
+  [ Jason Rhinelander ]
+  * Revert "Keep alive timeout for connection_base"
+
+  [ Leny Kholodov ]
+  * Update timeout. Add force shutdown during recv timeout
+
+  [ Ilya Kitaev ]
+  * Revert "Update timeout. Add force shutdown during recv timeout"
+  * fix: memleak in case libwallet running in multithreaded mode
+  * blocked_mode_client: io_service can be shared between multiple instances
+  * indents fixed
+
+  [ Jason Rhinelander ]
+  * Fix current block height estimate for RTA testnet
+
+  [ Leny Kholodov ]
+  * Protect connection_context_base from self assignments
+
+  [ Ilya Kitaev ]
+  * connection_context_base self assignment warning
+  * fix: find existing connection
+  * changed alpha4 version number
+
+  [ Jason Rhinelander ]
+  * Fix compilation error
+
+  [ ston1th ]
+  * monerod: do not log to tmpdir in daemon mode
+
+  [ Ilya Kitaev ]
+  * disable logging to tmp-dir
+  * fix: segfault while logging deleted connections
+  * fix: segfault while logging deleted connections
+
+  [ moneromooo-monero ]
+  * abstract_tcp_server2: fix race on shutdown
+
+  [ Ilya Kitaev ]
+  * Release alpha 4.1. version bump
+
+  [ Jason Rhinelander ]
+  * Don't build supernode in gc-alpha
+
+ -- Jason Rhinelander <jason@imaginary.ca>  Mon, 11 Feb 2019 16:23:11 -0400
+
 graft-alpha (1.3.3.alpha3.3-1~1bionic1) bionic; urgency=medium
 
   * Revert "Keep alive timeout for connection_base"

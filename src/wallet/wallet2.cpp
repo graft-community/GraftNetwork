@@ -68,6 +68,9 @@ extern "C"
 #include "crypto/keccak.h"
 #include "crypto/crypto-ops.h"
 }
+
+extern "C" void slow_hash_free_state();
+
 using namespace cryptonote;
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -2553,6 +2556,11 @@ bool wallet2::generate_chacha_key_from_secret_keys(crypto::chacha_key &key) cons
   crypto::generate_chacha_key(data, sizeof(data), key);
 
   memset(data, 0, sizeof(data));
+
+  // generate_chacha_key() -> .. -> slow_hash_allocate_state() allocates cryptonote 2Mb on heap
+  // which never freed in case thread exits
+  slow_hash_free_state(); 
+
   return true;
 }
 //----------------------------------------------------------------------------------------------------
@@ -5351,7 +5359,10 @@ uint64_t wallet2::get_daemon_blockchain_target_height(string &err)
 uint64_t wallet2::get_approximate_blockchain_height() const
 {
   // time of begining: testnet: 2018-01-12, mainnet: 2018-01-18;
-  const time_t fork_time = m_testnet ? 1515715200 : 1516233600;
+  //
+  // RTA testnet drifted more than 30 days, however (due to periods of inactivity); recalculated
+  // this (fake) start time based on the actual height at 2019-01-01:
+  const time_t fork_time = m_testnet ? 1518668710 : 1516233600;
 
   // in case we not launched mainnet yet
   if (fork_time > time(nullptr))

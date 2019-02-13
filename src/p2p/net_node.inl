@@ -1133,7 +1133,7 @@ namespace nodetool
   {
       LOG_PRINT_L1("P2P Request: handle_broadcast: start");
       LOG_PRINT_L1("P2P Request: handle_broadcast: sender_address: " << arg.sender_address
-                   << ", our address: " << m_supernode_str);
+                   << ", our address(es): " << join_supernodes_addresses(", "));
       if (context.m_state != p2p_connection_context::state_normal) {
           MWARNING(context << " invalid connection (no handshake)");
           return 1;
@@ -1186,7 +1186,7 @@ namespace nodetool
       LOG_PRINT_L1("P2P Request: handle_multicast: start");
       LOG_PRINT_L1("P2P Request: handle_multicast: sender_address: " << arg.sender_address
                    << ", receiver_addresses: " << boost::algorithm::join(arg.receiver_addresses, ", ")
-                   << ", our address: " << m_supernode_str);
+                   << ", our address(es): " << join_supernodes_addresses(", "));
       if (context.m_state != p2p_connection_context::state_normal) {
           MWARNING(context << " invalid connection (no handshake)");
           return 1;
@@ -1261,7 +1261,7 @@ namespace nodetool
       LOG_PRINT_L1("P2P Request: handle_unicast: start");
       LOG_PRINT_L1("P2P Request: handle_unicast: sender_address: " << arg.sender_address
                    << ", receiver_address: " << arg.receiver_address
-                   << ", our address: " << m_supernode_str);
+                   << ", our address(es): " << join_supernodes_addresses(", "));
       if (context.m_state != p2p_connection_context::state_normal) {
           MWARNING(context << " invalid connection (no handshake)");
           return 1;

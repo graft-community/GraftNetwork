@@ -433,6 +433,17 @@ namespace nodetool
         return addrs;
     }
 
+    std::string join_supernodes_addresses(const std::string &joiner = " ") {
+        std::ostringstream s;
+        bool first = true;
+        for (auto &addr : get_supernodes_addresses()) {
+            if (first) first = false;
+            else s << joiner;
+            s << addr;
+        }
+        return s.str();
+    }
+
     bool remove_supernode(const std::string &addr) {
         boost::lock_guard<boost::recursive_mutex> guard(m_supernode_lock);
         return m_supernodes.erase(addr);

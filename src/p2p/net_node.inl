@@ -40,6 +40,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/thread/thread.hpp>
 #include <atomic>
+#include <random>
 #include <boost/algorithm/string/join.hpp> // for logging
 
 #include "version.h"
@@ -114,6 +115,35 @@ namespace nodetool
 
     const command_line::arg_descriptor<bool> arg_save_graph = {"save-graph", "Save data for dr monero", false};
     const command_line::arg_descriptor<Uuid> arg_p2p_net_id = {"net-id", "The way to replace hardcoded NETWORK_ID. Effective only with --testnet, ex.: 'net-id = 54686520-4172-7420-6f77-205761722037'"};
+
+    // helper struct used to notify peers by uuid
+    struct connection_info
+    {
+        boost::uuids::uuid id;
+        peerid_type peer_id;
+        std::string info;
+    };
+
+    /*!
+     * helper to return non-empty subset of 'in' container, each element included with probability 'p'
+     */
+    template <typename T>
+    void select_subset_with_probability(double p, const T &in, T &out)
+    {
+        if (in.empty())
+            return;
+        static auto gen = std::mt19937{std::random_device{}()};
+        do {
+            for (const auto & item : in) {
+                std::uniform_real_distribution<> urd(0, 1);
+                auto rand = urd(gen);
+                if (rand < p) {
+                    out.push_back(std::move(item));
+                }
+            }
+        } while (out.empty());
+    }
+
   }
   //-----------------------------------------------------------------------------------
   template<class t_payload_net_handler>
@@ -796,14 +826,17 @@ namespace nodetool
   bool node_server<t_payload_net_handler>::notify_peer_list(int command, const std::string& buf, const std::vector<peerlist_entry>& peers_to_send, bool try_connect)
   {
       MDEBUG("P2P Request: notify_peer_list: start notify, total peers: " << peers_to_send.size());
+      // dbg
+      log_connections();
+
       for (unsigned i = 0; i < peers_to_send.size(); i++) {
           const peerlist_entry &pe = peers_to_send[i];
           boost::uuids::uuid conn_id;
-          MDEBUG("P2P Request: notify_peer_list: start notify: looking for existing connection for peer: " << pe.id << ", [" << pe.adr << "]");
+          MDEBUG("P2P Request: notify_peer_list: start notify: looking for existing connection for peer: " << pe.id << ", [" << pe.adr.str() << "]");
           bool connection_exists = find_connection_id_by_peer(pe, conn_id);
 
           bool sent = false;
-          MDEBUG("P2P Request: notify_peer_list: sending to peer: " << i << ", already connected: " << connection_exists
+          MDEBUG("P2P Request: notify_peer_list: sending to peer: " << pe.adr.str()  << ", already connected: " << connection_exists
                        << ", try connect: " << try_connect);
           if (connection_exists) {
               MDEBUG("P2P Request: notify_peer_list: peer is connected, sending to : " << pe.adr.host_str());
@@ -850,26 +883,37 @@ namespace nodetool
           }
           for (auto addr : addresses)
           {
-              LOG_PRINT_L2("P2P Request: multicast_send: find tunnel for " << addr);
+              LOG_PRINT_L2("P2P Request: multicast_send: looking for tunnel for " << addr);
               auto it = local_supernode_routes.find(addr);
               if (it == local_supernode_routes.end())
               {
                   MWARNING("no tunnel found for address: " << addr);
                   continue;
               }
+              // peers for address
               std::vector<peerlist_entry> addr_tunnels = (*it).second.peers;
               unsigned int count = 0;
               for (auto peer_it = addr_tunnels.begin(); peer_it != addr_tunnels.end(); ++peer_it)
               {
                   peerlist_entry addr_tunnel = *peer_it;
+
+
+                  // check if peer connected connections
+                  boost::uuids::uuid dummy;
+                  if (!find_connection_id_by_peer(addr_tunnel, dummy))
+                    continue;
+
+                  // don't allow duplicate entries
                   auto tunnel_it = std::find_if(tunnels.begin(), tunnels.end(),
                                                 [addr_tunnel](const peerlist_entry &entry) -> bool {
                       return entry.id == addr_tunnel.id;
                   });
+                  // check if our peer is in excluded peers
                   auto exclude_it = std::find(exclude_peerids.begin(), exclude_peerids.end(),
                                               addr_tunnel.id);
                   if (tunnel_it == tunnels.end() && exclude_it == exclude_peerids.end())
                   {
+                      MDEBUG("found tunnel for address: " << addr << ":  " << addr_tunnel.adr.str());
                       tunnels.push_back(addr_tunnel);
                       count++;
                   }
@@ -880,7 +924,7 @@ namespace nodetool
               }
           }
       }
-      LOG_PRINT_L2("P2P Request: multicast_send: End tunneling");
+      LOG_PRINT_L2("P2P Request: multicast_send: End tunneling, tunnels found: " << tunnels.size());
       return notify_peer_list(command, data, tunnels, true);
   }
 
@@ -954,6 +998,11 @@ namespace nodetool
   int node_server<t_payload_net_handler>::handle_supernode_announce(int command, COMMAND_SUPERNODE_ANNOUNCE::request& arg, p2p_connection_context& context)
   {
       LOG_PRINT_L1("P2P Request: handle_supernode_announce: start");
+      if (context.m_state != p2p_connection_context::state_normal) {
+          MWARNING(context << " invalid connection (no handshake)");
+          return 1;
+      }
+
 #ifdef LOCK_RTA_SENDING
     return 1;
 #endif
@@ -1050,18 +1099,45 @@ namespace nodetool
           // Notify neighbours about new ANNOUNCE
           arg.hop++;
           LOG_PRINT_L2("P2P Request: handle_supernode_announce: notify peers " << arg.hop);
+
+          std::list<boost::uuids::uuid> all_connections, random_connections;
+          m_net_server.get_config_object().foreach_connection([&](const p2p_connection_context& cntxt)
+          {
+            // skip ourself connections
+            if(cntxt.peer_id == m_config.m_peer_id)
+              return true;
+            all_connections.push_back(cntxt.m_connection_id);
+            return true;
+          });
+
+          if (all_connections.empty()) {
+            MWARNING("P2P Request: no connections to relay announce");
+            return 1;
+          }
+
+          select_subset_with_probability(1.0 / all_connections.size(), all_connections, random_connections);
+
           std::string arg_buff;
           epee::serialization::store_t_to_binary(arg, arg_buff);
-          relay_notify_to_all(command, arg_buff, context);
-          LOG_PRINT_L2("P2P Request: handle_supernode_announce: end");
+          // MDEBUG("P2P Request: handle_supernode_announce: relaying to neighbours: " << random_connections.size());
+          MDEBUG("P2P Request: handle_supernode_announce: relaying to neighbours: " << all_connections.size());
+          relay_notify_to_list(command, arg_buff, random_connections);
       }
+
+      LOG_PRINT_L2("P2P Request: handle_supernode_announce: end");
       return 1;
   }
 
   template<class t_payload_net_handler>
   int node_server<t_payload_net_handler>::handle_broadcast(int command, typename COMMAND_BROADCAST::request &arg, p2p_connection_context &context)
   {
-      LOG_PRINT_L1("P2P Request: handle_broadcast: sender_address: " << arg.sender_address);
+      LOG_PRINT_L1("P2P Request: handle_broadcast: start");
+      LOG_PRINT_L1("P2P Request: handle_broadcast: sender_address: " << arg.sender_address
+                   << ", our address: " << m_supernode_str);
+      if (context.m_state != p2p_connection_context::state_normal) {
+          MWARNING(context << " invalid connection (no handshake)");
+          return 1;
+      }
 
 #ifdef LOCK_RTA_SENDING
     return 1;
@@ -1107,8 +1183,14 @@ namespace nodetool
   template<class t_payload_net_handler>
   int node_server<t_payload_net_handler>::handle_multicast(int command, typename COMMAND_MULTICAST::request &arg, p2p_connection_context &context)
   {
+      LOG_PRINT_L1("P2P Request: handle_multicast: start");
       LOG_PRINT_L1("P2P Request: handle_multicast: sender_address: " << arg.sender_address
-                   << ", receiver_addresses: " << boost::algorithm::join(arg.receiver_addresses, ", "));
+                   << ", receiver_addresses: " << boost::algorithm::join(arg.receiver_addresses, ", ")
+                   << ", our address: " << m_supernode_str);
+      if (context.m_state != p2p_connection_context::state_normal) {
+          MWARNING(context << " invalid connection (no handshake)");
+          return 1;
+      }
 
 #ifdef LOCK_RTA_SENDING
     return 1;
@@ -1176,8 +1258,14 @@ namespace nodetool
   template<class t_payload_net_handler>
   int node_server<t_payload_net_handler>::handle_unicast(int command, typename COMMAND_UNICAST::request &arg, p2p_connection_context &context)
   {
+      LOG_PRINT_L1("P2P Request: handle_unicast: start");
       LOG_PRINT_L1("P2P Request: handle_unicast: sender_address: " << arg.sender_address
-                   << ", receiver_address: " << arg.receiver_address);
+                   << ", receiver_address: " << arg.receiver_address
+                   << ", our address: " << m_supernode_str);
+      if (context.m_state != p2p_connection_context::state_normal) {
+          MWARNING(context << " invalid connection (no handshake)");
+          return 1;
+      }
 
 #ifdef LOCK_RTA_SENDING
     return 1;
@@ -1682,7 +1770,8 @@ namespace nodetool
     MDEBUG("find_connection_id_by_peer: looking for: " << pe.adr.str());
     m_net_server.get_config_object().foreach_connection([&pe, &ret, &conn_id](p2p_connection_context& cntxt)
     {
-      if (cntxt.m_remote_address == pe.adr) {
+      LOG_INFO_CC(cntxt, "find_connection_id_by_peer: checking connection, pe.adr: " << pe.adr.str());
+      if (cntxt.peer_id == pe.id) {
         MDEBUG("find_connection_id_by_peer: found: " << pe.adr.str());
         conn_id = cntxt.m_connection_id;
         ret = true;
@@ -1690,6 +1779,7 @@ namespace nodetool
       }
       return true;
     });
+    MDEBUG("find_connection_id_by_peer: done looking for: " << pe.adr.str() << ", found: " << conn_id);
     return ret;
   }
 
@@ -2296,7 +2386,7 @@ namespace nodetool
   template<class t_payload_net_handler>
   void node_server<t_payload_net_handler>::do_supernode_announce(const cryptonote::COMMAND_RPC_SUPERNODE_ANNOUNCE::request &req)
   {
-    LOG_PRINT_L1("Incoming supernode announce request");
+    MTRACE("Incoming supernode announce request");
 #ifdef LOCK_RTA_SENDING
     return;
 #endif
@@ -2325,19 +2415,37 @@ namespace nodetool
     std::string blob;
     epee::serialization::store_t_to_binary(p2p_req, blob);
     std::set<peerid_type> announced_peers;
-    // send to peers
+
+
+    // first collect all connections into container
+    // (its rarely possible connection could be erased from connection_map while iterating with 'foreach_connection')
+    std::list<connection_info> all_connections;
     m_net_server.get_config_object().foreach_connection([&](p2p_connection_context& context) {
-        LOG_INFO_CC(context, "invoking COMMAND_SUPERNODE_ANNOUNCE");
-        // saving connection context info to temp variable as it might be destroyed in case
-        // 'invoke_notify_to_peer' fails - this way LOG_ERROR_CC with context might cause segfault
-        std::string conn_info = epee::net_utils::print_connection_context_short(context);
-        if (invoke_notify_to_peer(COMMAND_SUPERNODE_ANNOUNCE::ID, blob, context)) {
-            announced_peers.insert(context.peer_id);
-        } else {
-            LOG_ERROR("[" << conn_info << "] failed to invoke COMMAND_SUPERNODE_ANNOUNCE");
-        }
-        return true;
+      all_connections.push_back(
+                    {context.m_connection_id,
+                     context.peer_id,
+                     epee::net_utils::print_connection_context_short(context)} );
+      return true;
     });
+
+    std::list<connection_info> random_connections;
+
+    select_subset_with_probability(1.0 /*/ all_connections.size()*/, all_connections, random_connections);
+
+
+    // same as 'relay_notify_to_list' does but we also need a) populate announced_peers and b) some extra logging
+    for (const auto &c: random_connections) {
+        MTRACE("[" << c.info << "] invoking COMMAND_SUPERNODE_ANNOUCE");
+        if (m_net_server.get_config_object().notify(COMMAND_SUPERNODE_ANNOUNCE::ID, blob, c.id)) {
+            MTRACE("[" << c.info << "] COMMAND_SUPERNODE_ANNOUCE invoked, peer_id: " << c.peer_id);
+            announced_peers.insert(c.peer_id);
+        }
+        else
+            LOG_ERROR("[" << c.info << "] failed to invoke COMMAND_SUPERNODE_ANNOUNCE");
+    }
+    return;
+    // XXX: not clear why do we need to send to "peers" if we already sent to all the connected neighbours?
+    // also,
 
     std::list<peerlist_entry> peerlist_white, peerlist_gray;
     m_peerlist.get_peerlist_full(peerlist_gray, peerlist_white);
@@ -2348,9 +2456,16 @@ namespace nodetool
         }
         peers_to_send.push_back(pe);
     }
-    MDEBUG("P2P Request: do_supernode_announce: peers_to_send size: " << peers_to_send.size() << ", peerlist_white size: " << peerlist_white.size());
+    if (peers_to_send.empty()) {
+      MWARNING("P2P Request: do_supernode_announce: peers_to_send is empty");
+      return;
+    }
+    std::vector<peerlist_entry> random_peers_to_send;
+    select_subset_with_probability(1.0 / peers_to_send.size(), peers_to_send, random_peers_to_send);
+
+    MDEBUG("P2P Request: do_supernode_announce: peers_to_send size: " << random_peers_to_send.size() << ", peerlist_white size: " << peerlist_white.size() << ", announced_peers size: " << announced_peers.size());
     LOG_PRINT_L2("P2P Request: do_supernode_announce: notify_peer_list");
-    notify_peer_list(COMMAND_SUPERNODE_ANNOUNCE::ID,blob,peers_to_send);
+    notify_peer_list(COMMAND_SUPERNODE_ANNOUNCE::ID, blob, random_peers_to_send);
     LOG_PRINT_L2("P2P Request: do_supernode_announce: end");
   }
 
@@ -2410,23 +2525,32 @@ namespace nodetool
       std::string blob;
       epee::serialization::store_t_to_binary(p2p_req, blob);
       std::set<peerid_type> announced_peers;
+
       // send to peers
+      std::list<connection_info> connections;
       m_net_server.get_config_object().foreach_connection([&](p2p_connection_context& context) {
-          MINFO("sending COMMAND_BROADCAST to " << context.peer_id);
+          // TODO: isn't all rta peers have peer_id = 0?
           if (context.peer_id == 0) {
               LOG_INFO_CC(context, "invalid connection [COMMAND_BROADCAST]");
               return true;
           }
-          // saving connection context info to temp variable as it might be destroyed in case
-          // 'invoke_notify_to_peer' fails - this way LOG_ERROR_CC with context might cause segfault
-          std::string conn_info = epee::net_utils::print_connection_context_short(context);
-          if (invoke_notify_to_peer(COMMAND_BROADCAST::ID, blob, context)) {
-              announced_peers.insert(context.peer_id);
-          } else {
-              LOG_ERROR("[" << conn_info << "] failed to invoke COMMAND_BROADCAST");
-          }
+
+          connections.push_back(
+          {context.m_connection_id,
+           context.peer_id,
+           epee::net_utils::print_connection_context_short(context)} );
           return true;
       });
+
+      for (const auto &c: connections) {
+          MTRACE("[" << c.info << "] invoking COMMAND_BROADCAST");
+          if (m_net_server.get_config_object().notify(COMMAND_BROADCAST::ID, blob, c.id)) {
+              MTRACE("[" << c.info << "] COMMAND_BROADCAST invoked, peer_id: " << c.peer_id);
+              announced_peers.insert(c.peer_id);
+          }
+          else
+              LOG_ERROR("[" << c.info << "] failed to invoke COMMAND_BROADCAST");
+      }
 
       std::list<peerlist_entry> peerlist_white, peerlist_gray;
       m_peerlist.get_peerlist_full(peerlist_gray, peerlist_white);
@@ -2437,6 +2561,7 @@ namespace nodetool
           peers_to_send.push_back(pe);
       }
 
+      MDEBUG("P2P Request: do_broadcast: peers_to_send size: " << peers_to_send.size() << ", peerlist_white size: " << peerlist_white.size() << ", announced_peers size: " << announced_peers.size());
       LOG_PRINT_L2("P2P Request: do_broadcast: notify_peer_list");
       notify_peer_list(COMMAND_BROADCAST::ID, blob, peers_to_send);
       LOG_PRINT_L2("P2P Request: do_broadcast: End");
@@ -2620,6 +2745,7 @@ namespace nodetool
       ss << cntxt.m_remote_address.str()
         << " \t\tpeer_id " << cntxt.peer_id
         << " \t\tconn_id " << epee::string_tools::get_str_from_guid_a(cntxt.m_connection_id) << (cntxt.m_is_income ? " INC":" OUT")
+        << " state: " << cryptonote::get_protocol_state_string(cntxt.m_state)
         << std::endl;
       return true;
     });

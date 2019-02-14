@@ -1,3 +1,14 @@
+graft-alpha (1.3.4.2+gc2-1) unstable; urgency=medium
+
+  [ Jason Rhinelander ]
+  * Updated to retagged upstream alpha 4.2
+
+  [ Ilya Kitaev ]
+  * removed debuggin code
+  * removed monero seeds
+
+ -- Jason Rhinelander <jason@imaginary.ca>  Thu, 14 Feb 2019 13:37:09 -0400
+
 graft-alpha (1.3.4.2+gc1-1) unstable; urgency=medium
 
   [ Ilya Kitaev ]

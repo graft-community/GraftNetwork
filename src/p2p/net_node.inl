@@ -1129,8 +1129,6 @@ namespace nodetool
   int node_server<t_payload_net_handler>::handle_broadcast(int command, typename COMMAND_BROADCAST::request &arg, p2p_connection_context &context)
   {
       LOG_PRINT_L1("P2P Request: handle_broadcast: start");
-      LOG_PRINT_L1("P2P Request: handle_broadcast: sender_address: " << arg.sender_address
-                   << ", our address(es): " << join_supernodes_addresses(", "));
       if (context.m_state != p2p_connection_context::state_normal) {
           MWARNING(context << " invalid connection (no handshake)");
           return 1;
@@ -1146,6 +1144,8 @@ namespace nodetool
               sn_guard(m_supernode_lock, boost::defer_lock);
           boost::lock(cache_guard, sn_guard);
           LOG_PRINT_L3("P2P Request: handle_broadcast: unlock");
+          LOG_PRINT_L1("P2P Request: handle_broadcast: sender_address: " << arg.sender_address
+                       << ", our address(es): " << join_supernodes_addresses(", "));
           if (m_supernode_requests_cache.find(arg.message_id) == m_supernode_requests_cache.end())
           {
               LOG_PRINT_L2("P2P Request: handle_broadcast: post to supernodes");
@@ -1181,9 +1181,6 @@ namespace nodetool
   int node_server<t_payload_net_handler>::handle_multicast(int command, typename COMMAND_MULTICAST::request &arg, p2p_connection_context &context)
   {
       LOG_PRINT_L1("P2P Request: handle_multicast: start");
-      LOG_PRINT_L1("P2P Request: handle_multicast: sender_address: " << arg.sender_address
-                   << ", receiver_addresses: " << boost::algorithm::join(arg.receiver_addresses, ", ")
-                   << ", our address(es): " << join_supernodes_addresses(", "));
       if (context.m_state != p2p_connection_context::state_normal) {
           MWARNING(context << " invalid connection (no handshake)");
           return 1;
@@ -1202,6 +1199,9 @@ namespace nodetool
           boost::lock(cache_guard, sn_guard);
 
           LOG_PRINT_L3("P2P Request: handle_multicast: unlock");
+          LOG_PRINT_L1("P2P Request: handle_multicast: sender_address: " << arg.sender_address
+                       << ", receiver_addresses: " << boost::algorithm::join(arg.receiver_addresses, ", ")
+                       << ", our address(es): " << join_supernodes_addresses(", "));
           if (m_supernode_requests_cache.find(arg.message_id) == m_supernode_requests_cache.end())
           {
               LOG_PRINT_L2("P2P Request: handle_multicast: post to supernodes");
@@ -1256,9 +1256,6 @@ namespace nodetool
   int node_server<t_payload_net_handler>::handle_unicast(int command, typename COMMAND_UNICAST::request &arg, p2p_connection_context &context)
   {
       LOG_PRINT_L1("P2P Request: handle_unicast: start");
-      LOG_PRINT_L1("P2P Request: handle_unicast: sender_address: " << arg.sender_address
-                   << ", receiver_address: " << arg.receiver_address
-                   << ", our address(es): " << join_supernodes_addresses(", "));
       if (context.m_state != p2p_connection_context::state_normal) {
           MWARNING(context << " invalid connection (no handshake)");
           return 1;
@@ -1276,6 +1273,9 @@ namespace nodetool
               sn_guard(m_supernode_lock, boost::defer_lock);
           boost::lock(cache_guard, sn_guard);
           LOG_PRINT_L3("P2P Request: handle_unicast: unlock");
+          LOG_PRINT_L1("P2P Request: handle_unicast: sender_address: " << arg.sender_address
+                       << ", receiver_address: " << arg.receiver_address
+                       << ", our address(es): " << join_supernodes_addresses(", "));
           if (m_supernode_requests_cache.find(arg.message_id) == m_supernode_requests_cache.end())
           {
               LOG_PRINT_L2("P2P Request: handle_unicast: post to supernodes");

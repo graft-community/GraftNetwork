@@ -1,3 +1,24 @@
+graft (1.6.0-1~ubuntu16.04) xenial; urgency=medium
+
+  [ EDDragonWolf ]
+  * Added new option for serializing data. Fixed bug with serializing connection data
+
+  [ Kent ]
+  * Update README.md
+
+  [ Ilya Kitaev ]
+  * debug: print tx_id when tx not found in pool
+
+  [ EDDragonWolf ]
+  * Added payment id support for supernode transfers
+  * Added support of CryptoNight Waltz based on CryptoNight MoneroV8
+  * Added support od reverse chunk operation and CryptoNight ReverseWaltz tweak
+  * Added performance tests for CNv8, CNv8 Waltz, CNv8 ReverseWaltz
+  * Optimized cn reverse implementation with compiler-time constant for post_aes macro
+  * Scheduled HF12  and changed the release version
+
+ -- Jason Rhinelander <jason@imaginary.ca>  Wed, 06 Mar 2019 15:12:26 -0400
+
 graft (1.5.1-1~0xenial1) xenial; urgency=medium
 
   * Initial release.

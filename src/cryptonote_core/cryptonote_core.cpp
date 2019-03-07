@@ -67,6 +67,7 @@ namespace cryptonote
   core::core(i_cryptonote_protocol* pprotocol):
               m_mempool(m_blockchain_storage),
               m_blockchain_storage(m_mempool),
+              m_graft_stake_transaction_processor(m_blockchain_storage),
               m_miner(this),
               m_miner_address(boost::value_initialized<account_public_address>()),
               m_starter_message_showed(false),
@@ -311,6 +312,9 @@ namespace cryptonote
     // folder might not be a directory, etc, etc
     catch (...) { }
 
+    MGINFO("Initialize stake transaction processor");
+    m_graft_stake_transaction_processor.init_storages(m_config_folder);
+
     BlockchainDB* db = new_db(db_type);
     if (db == NULL)
     {
@@ -406,6 +410,8 @@ namespace cryptonote
 
     r = m_mempool.init();
     CHECK_AND_ASSERT_MES(r, false, "Failed to initialize memory pool");
+
+    m_graft_stake_transaction_processor.synchronize();
 
     // now that we have a valid m_blockchain_storage, we can clean out any
     // transactions in the pool that do not conform to the current fork
@@ -1082,9 +1088,33 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   bool core::add_new_block(const block& b, block_verification_context& bvc)
   {
-    return m_blockchain_storage.add_new_block(b, bvc);
-  }
+    if (!m_blockchain_storage.add_new_block(b, bvc))
+      return false;
 
+    m_graft_stake_transaction_processor.synchronize();
+
+    return true;
+  }
+  //-----------------------------------------------------------------------------------------------
+  void core::set_update_stake_transactions_handler(const stake_transactions_update_handler& handler)
+  {
+    m_graft_stake_transaction_processor.set_on_update_stake_transactions_handler(handler);
+  }
+  //-----------------------------------------------------------------------------------------------
+  void core::invoke_update_stake_transactions_handler()
+  {
+    m_graft_stake_transaction_processor.invoke_update_stake_transactions_handler(true);
+  }
+  //-----------------------------------------------------------------------------------------------
+  void core::set_update_blockchain_based_list_handler(const blockchain_based_list_update_handler& handler)
+  {
+    m_graft_stake_transaction_processor.set_on_update_blockchain_based_list_handler(handler);
+  }
+  //-----------------------------------------------------------------------------------------------
+  void core::invoke_update_blockchain_based_list_handler()
+  {
+    m_graft_stake_transaction_processor.invoke_update_blockchain_based_list_handler(true, size_t(-1));
+  }
   //-----------------------------------------------------------------------------------------------
   bool core::prepare_handle_incoming_blocks(const std::list<block_complete_entry> &blocks)
   {

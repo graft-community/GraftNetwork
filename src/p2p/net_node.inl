@@ -529,11 +529,11 @@ namespace nodetool
   bool node_server<t_payload_net_handler>::init(const boost::program_options::variables_map& vm)
   {
     m_payload_handler.get_core().set_update_stakes_handler(
-      [&](const cryptonote::StakeTransactionProcessor::supernode_stake_array& stakes) { handle_stakes_update(stakes); }
+      [&](uint64_t block_height, const cryptonote::StakeTransactionProcessor::supernode_stake_array& stakes) { handle_stakes_update(block_height, stakes); }
     );
 
     m_payload_handler.get_core().set_update_blockchain_based_list_handler(
-      [&](uint64_t block_number, const cryptonote::StakeTransactionProcessor::supernode_tier_array& tiers) { handle_blockchain_based_list_update(block_number, tiers); }
+      [&](uint64_t block_height, const cryptonote::StakeTransactionProcessor::supernode_tier_array& tiers) { handle_blockchain_based_list_update(block_height, tiers); }
     );
 
     std::set<std::string> full_addrs;
@@ -2996,7 +2996,7 @@ namespace nodetool
   }
 
   template<class t_payload_net_handler>
-  void node_server<t_payload_net_handler>::handle_stakes_update(const cryptonote::StakeTransactionProcessor::supernode_stake_array& stakes)
+  void node_server<t_payload_net_handler>::handle_stakes_update(uint64_t block_height, const cryptonote::StakeTransactionProcessor::supernode_stake_array& stakes)
   {
     static std::string supernode_endpoint("send_supernode_stakes");
 
@@ -3005,9 +3005,11 @@ namespace nodetool
     if (m_supernodes.empty())
       return;
 
-    LOG_PRINT_L1("handle_stakes_update to supernode");
+    LOG_PRINT_L1("handle_stakes_update to supernode for block #" << block_height);
 
     cryptonote::COMMAND_RPC_SUPERNODE_STAKES::request request;
+
+    request.block_height = block_height;
 
     request.stakes.reserve(stakes.size());
 
@@ -3035,7 +3037,7 @@ namespace nodetool
   }
 
   template<class t_payload_net_handler>
-  void node_server<t_payload_net_handler>::handle_blockchain_based_list_update(uint64_t block_number, const cryptonote::StakeTransactionProcessor::supernode_tier_array& tiers)
+  void node_server<t_payload_net_handler>::handle_blockchain_based_list_update(uint64_t block_height, const cryptonote::StakeTransactionProcessor::supernode_tier_array& tiers)
   {
     static std::string supernode_endpoint("blockchain_based_list");
 
@@ -3044,11 +3046,11 @@ namespace nodetool
     if (m_supernodes.empty())
       return;
 
-    LOG_PRINT_L1("handle_blockchain_based_list_update to supernode");
+    LOG_PRINT_L1("handle_blockchain_based_list_update to supernode for block #" << block_height);
 
     cryptonote::COMMAND_RPC_SUPERNODE_BLOCKCHAIN_BASED_LIST::request request;
 
-    request.block_number = block_number;
+    request.block_height = block_height;
 
     for (size_t i=0; i<tiers.size(); i++)
     {

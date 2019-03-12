@@ -1,3 +1,115 @@
+graft-alpha (1.3.5.1+gc1-1~ubuntu18.04) bionic; urgency=medium
+
+  * Alpha 5.1
+
+  [ Leny Kholodov ]
+  * Stake wallet transaction in simplewallet
+  * Fix for attaching tx secret key to stake transactions
+  * Transaction extra tag has been updated
+  * Adding supernode signature to stake transaction
+
+  [ Alexander Suprunenko ]
+  * Message Encryption functions added.
+  * Copyright added.
+  * Big-endian support added.
+  * after review. Low level separated.
+
+  [ Leny Kholodov ]
+  * Stake transaction validation
+  * Alternative chains processing for stake transaction validation
+  * Tier & amount for stake transaction. Remove obsolete transactions from update requests. Stake transaction validation: unlock_time fix
+  * Add stake transaction amount validation
+  * Limit unlock time by STAKE_MIN_UNLOCK_TIME
+  * Move supernode signature validation to cryptonode
+  * Add graft_rta_config.h with constants for RTA validation process
+  * Disable checks which can't be tested at this moment
+  * Tests fix
+  * Fixing stake transactions notification
+  * Stake transaction hash as a hex string
+  * Stake wallet warning
+  * Tier & amount for stake transaction. Remove obsolete transactions from update requests
+  * BlockchainBasedList implementation
+  * Blockchain based list communication between cryptonode and supernode
+  * Tiers & alternative chains processing for blockchain based list
+  * Blockchain based list implementation update: using Mersenne-Twister instead of direct selection random values from block hash
+  * Tests fix
+  * Blockchain based list communication from supernode to cryptonode
+  * Deterministic sorting of supernodes
+  * Send supernode public wallet address to supernode
+
+  [ Ilya Kitaev ]
+  * updated announce messages
+  * add: last_announce_time
+  * fix: do_broadcast, do_supernode_announce: notify called outside of foreach_connection loop
+  * announce sent to all and relayed with probability 1/N
+  * do not handle connections without handshake
+  * fix: find_connection_id_by_peer finds only connected connection
+  * deleted unused method
+  * fix: random generator is static
+  * Release alpha 4.2
+  * removed debuggin code
+  * removed monero seeds
+  * fix: deadlock due 'print_connection_container' inside logger macro
+
+  [ Leny Kholodov ]
+  * Fixes after rebase
+  * Debug logging
+  * Send blockchain_based_list for each block
+  * Simplify stake wallet transaction sending. Add CLI side checks
+  * Move stake transactions cache and blockchain based list to data directory
+
+  [ Ilya Kitaev ]
+  * fix: rpc server: supernode address -> supernode id
+  * version bump
+
+  [ Leny Kholodov ]
+  * Sending several blockchain based lists to supernode during the start
+
+  [ Ilya Kitaev ]
+  * add: rta/get_stats RPC call to get RTA network io stats
+  * rta-alpha5 hf13
+
+  [ Jason Rhinelander ]
+  * Fix missing header in cmake
+
+  [ EDDragonWolf ]
+  * Added RTA fixed fee support
+
+  [ Leny Kholodov ]
+  * Use get_block_hash_from_height(height) instead of block.hash, post obsolete stake transactions with zero amount to supernode to indicate supernode presense, stable_sort instead of sort for blockchain based list building
+  * Add periodic batch blockchain based list update
+  * Use supernode aggregated stakes instead of stake transactions
+  * Linking blockchain based list with supernode stakes based on block number. Passing stake amount along with blockchain based list to supernode
+
+  [ Ilya Kitaev ]
+  * fix: tests build
+  * add: Utils::get_tx_amount
+
+  [ Leny Kholodov ]
+  * Send block number along with stakes to supernode
+  * Enable supernode signature checking during validation of stake transactions
+  * Increase stake transactions min unlock time for wallet cli
+
+  [ Ilya Kitaev ]
+  * RTA transaction
+  * Revert "[WIP] fixing unit tests for added field transaction_prefix.type"
+  * predefined key indexes fro pos, pos-proxy, wallet-proxy
+  * tx_extra contant - temporary revert
+  * rta tx validation
+  * add: "create_rta_tx" wallet rpc
+  * RTA tx validation + tests
+  * rta-tx: check if supernode is valid
+  * rename: create_rta_tx->transfer_rta
+
+  [ Leny Kholodov ]
+  * Protect stake transactions processor from error during transactions parsing
+
+  [ Ilya Kitaev ]
+  * reverted "address" in rta_signature
+  * version bump
+
+ -- Jason Rhinelander <jason@imaginary.ca>  Tue, 12 Mar 2019 16:56:41 -0300
+
 graft-alpha (1.3.4.2+gc3-1~bionic1) bionic; urgency=medium
 
   * Fix deadlock in supernode address lookups

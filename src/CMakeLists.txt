@@ -111,7 +111,7 @@ function (monero_add_library name)
     LIBRARY DESTINATION lib/${CMAKE_LIBRARY_ARCHITECTURE}/${GRAFT_INSTALL_LIBRARY_SUBDIR})
 endfunction ()
 
-monero_install_headers("" cryptonote_config.h)
+monero_install_headers("" cryptonote_config.h graft_rta_config.h)
 
 add_subdirectory(common)
 add_subdirectory(crypto)

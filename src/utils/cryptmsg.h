@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017, The Monero Project
+// Copyright (c) 2019, The Graft Project
 //
 // All rights reserved.
 //
@@ -26,46 +26,40 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include "wallet/wallet2_api.h"
-#include "wallet/wallet2.h"
+#pragma once
 
-#include <string>
+#include "crypto/crypto.h"
 #include <vector>
 
+namespace graft::crypto_tools {
 
-namespace Monero {
+/*!
+ * \brief encryptMessage - encrypts data for recipients using their B public keys (assumed public view keys).
+ *
+ * \param input - data to encrypt.
+ * \param Bkeys - vector of B keys for each recipients.
+ * \param output - resulting encripted message.
+ */
+void encryptMessage(const std::string& input, const std::vector<crypto::public_key>& Bkeys, std::string& output);
 
-class WalletImpl;
-class PendingTransactionImpl : public PendingTransaction
-{
-public:
-    PendingTransactionImpl(WalletImpl &wallet);
-    ~PendingTransactionImpl();
-    int status() const;
-    std::string errorString() const;
-    bool commit(const std::string &filename = "", bool overwrite = false);
-    uint64_t amount() const;
-    uint64_t dust() const;
-    uint64_t fee() const;
-    std::vector<std::string> txid() const;
-    uint64_t txCount() const;
-    bool save(std::ostream &stream);
-    std::vector<std::string> getRawTransaction() const override;
-    void updateTransactionCache() override;
-    // TODO: update for new rta tx structure
-    void putRtaSignatures(const std::vector<RtaSignature> &) override;
-private:
-    friend class WalletImpl;
-    WalletImpl &m_wallet;
+/*!
+ * \brief encryptMessage - encrypts data for single recipient using B public keys (assumed public view key).
+ *
+ * \param input - data to encrypt.
+ * \param Bkey - B keys of recipient.
+ * \param output - resulting encripted message.
+ */
+void encryptMessage(const std::string& input, const crypto::public_key& Bkey, std::string& output);
 
-    int  m_status;
-    std::string m_errorString;
-    std::vector<tools::wallet2::pending_tx> m_pending_tx;
-};
+/*!
+ * \brief decryptMessage - (reverse of encryptMessage) decrypts data for one of the recipients using his secret key b.
+ *
+ * \param input - data that was created by encryptForBs.
+ * \param bkey - secret key corresponding to one of Bs that were used to encrypt.
+ * \param output - resulting decrypted data.
+ * \return true on success or false otherwise
+ */
+bool decryptMessage(const std::string& input, const crypto::secret_key& bkey, std::string& output);
 
-
-}
-
-namespace Bitmonero = Monero;
+} //namespace graft::crypto_tools

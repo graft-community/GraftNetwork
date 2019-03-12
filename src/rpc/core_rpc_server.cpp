@@ -1769,20 +1769,49 @@ namespace cryptonote
         return false;
       }
 
-      // validate input parameters
-      cryptonote::account_public_address acc = AUTO_VAL_INIT(acc);
-      if (!validate_wallet(req.address, m_testnet))
-      {
-        error_resp.code = CORE_RPC_ERROR_CODE_WRONG_WALLET_ADDRESS;
-        error_resp.message = "Failed to parse wallet address";
-        return false;
-      }
-
       // send p2p announce
-      m_p2p.add_supernode(req.address, req.network_address);
+      m_p2p.add_supernode(req.supernode_public_id, req.network_address);
       m_p2p.do_supernode_announce(req);
       res.status = 0;
       LOG_PRINT_L0("RPC Request: on_supernode_announce: end");
+      return true;
+  }
+
+  //------------------------------------------------------------------------------------------------------------------------------
+  bool core_rpc_server::on_supernode_stakes(const COMMAND_RPC_SUPERNODE_GET_STAKES::request &req, COMMAND_RPC_SUPERNODE_GET_STAKES::response &res, json_rpc::error &error_resp)
+  {
+      LOG_PRINT_L0("RPC Request: on_supernode_stakes: start");
+      if (!check_core_busy())
+      {
+        error_resp.code = CORE_RPC_ERROR_CODE_CORE_BUSY;
+        error_resp.message = "Core is busy.";
+        return false;
+      }
+
+      // send p2p stakes
+      m_p2p.add_supernode(req.supernode_public_id, req.network_address);
+      m_p2p.send_stakes_to_supernode();
+      res.status = 0;
+      LOG_PRINT_L0("RPC Request: on_supernode_stakes: end");
+      return true;
+  }
+
+  //------------------------------------------------------------------------------------------------------------------------------
+  bool core_rpc_server::on_supernode_blockchain_based_list(const COMMAND_RPC_SUPERNODE_GET_BLOCKCHAIN_BASED_LIST::request &req, COMMAND_RPC_SUPERNODE_GET_BLOCKCHAIN_BASED_LIST::response &res, json_rpc::error &error_resp)
+  {
+      LOG_PRINT_L0("RPC Request: on_supernode_blockchain_based_list: start");
+      if (!check_core_busy())
+      {
+        error_resp.code = CORE_RPC_ERROR_CODE_CORE_BUSY;
+        error_resp.message = "Core is busy.";
+        return false;
+      }
+
+      // send p2p stake txs
+      m_p2p.add_supernode(req.supernode_public_id, req.network_address);
+      m_p2p.send_blockchain_based_list_to_supernode(req.last_received_block_height);
+      res.status = 0;
+      LOG_PRINT_L0("RPC Request: on_supernode_blockchain_based_list: end");
       return true;
   }
 
@@ -1799,10 +1828,11 @@ namespace cryptonote
 
       cryptonote::account_public_address acc = AUTO_VAL_INIT(acc);
       std::string sender_address = req.sender_address;
-      if (!sender_address.empty() && !cryptonote::get_account_address_from_str(acc, m_testnet, sender_address))
+      crypto::public_key dummy_key;
+      if (!sender_address.empty() && !epee::string_tools::hex_to_pod(sender_address, dummy_key))
       {
           error_resp.code = CORE_RPC_ERROR_CODE_WRONG_WALLET_ADDRESS;
-          error_resp.message = "Failed to parse wallet address";
+          error_resp.message = "Failed to parse sender id";
           return false;
       }
 
@@ -1824,21 +1854,22 @@ namespace cryptonote
       }
 
       cryptonote::account_public_address acc = AUTO_VAL_INIT(acc);
+      crypto::public_key dummy_key;
       for (auto addr : req.receiver_addresses)
       {
-          if (addr.empty() || !cryptonote::get_account_address_from_str(acc, m_testnet, addr))
+          if (addr.empty() || !epee::string_tools::hex_to_pod(addr, dummy_key))
           {
               error_resp.code = CORE_RPC_ERROR_CODE_WRONG_WALLET_ADDRESS;
-              error_resp.message = "Failed to parse wallet address";
+              error_resp.message = "Failed to parse receiver id";
               return false;
           }
       }
 
       std::string sender_address = req.sender_address;
-      if (!sender_address.empty() && !cryptonote::get_account_address_from_str(acc, m_testnet, sender_address))
+      if (!sender_address.empty() && !epee::string_tools::hex_to_pod(sender_address, dummy_key))
       {
           error_resp.code = CORE_RPC_ERROR_CODE_WRONG_WALLET_ADDRESS;
-          error_resp.message = "Failed to parse wallet address";
+          error_resp.message = "Failed to parse sender id";
           return false;
       }
 
@@ -1862,18 +1893,19 @@ namespace cryptonote
       cryptonote::account_public_address acc = AUTO_VAL_INIT(acc);
 
       std::string receiver_address = req.receiver_address;
-      if (receiver_address.empty() || !cryptonote::get_account_address_from_str(acc, m_testnet, receiver_address))
+      crypto::public_key dummy_key;
+      if (receiver_address.empty() || !epee::string_tools::hex_to_pod(receiver_address, dummy_key))
       {
           error_resp.code = CORE_RPC_ERROR_CODE_WRONG_WALLET_ADDRESS;
-          error_resp.message = "Failed to parse wallet address";
+          error_resp.message = "Failed to parse receiver id";
           return false;
       }
 
       std::string sender_address = req.sender_address;
-      if (!sender_address.empty() && !cryptonote::get_account_address_from_str(acc, m_testnet, sender_address))
+      if (!sender_address.empty() && !epee::string_tools::hex_to_pod(sender_address, dummy_key))
       {
           error_resp.code = CORE_RPC_ERROR_CODE_WRONG_WALLET_ADDRESS;
-          error_resp.message = "Failed to parse wallet address";
+          error_resp.message = "Failed to parse sender id";
           return false;
       }
 
@@ -1895,6 +1927,19 @@ namespace cryptonote
           res.supernode_address = res.supernodes_addresses[0];
 
       LOG_PRINT_L0("RPC Request: on_get_tunnels: end");
+      return true;
+  }
+
+  //------------------------------------------------------------------------------------------------------------------------------
+
+  bool core_rpc_server::on_get_rta_stats(const COMMAND_RPC_RTA_STATS::request &req, COMMAND_RPC_RTA_STATS::response &res, epee::json_rpc::error &error_resp)
+  {
+      res.announce_bytes_in = m_p2p.get_announce_bytes_in();
+      res.announce_bytes_out = m_p2p.get_announce_bytes_out();
+      res.broadcast_bytes_in = m_p2p.get_broadcast_bytes_in();
+      res.broadcast_bytes_out = m_p2p.get_broadcast_bytes_out();
+      res.multicast_bytes_in = m_p2p.get_multicast_bytes_in();
+      res.multicast_bytes_out = m_p2p.get_multicast_bytes_out();
       return true;
   }
 

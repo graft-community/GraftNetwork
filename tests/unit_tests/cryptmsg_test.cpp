@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017, The Monero Project
+// Copyright (c) 2019, The Graft Project
 //
 // All rights reserved.
 //
@@ -26,46 +26,49 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include "wallet/wallet2_api.h"
-#include "wallet/wallet2.h"
+#include <gtest/gtest.h>
+#include "utils/cryptmsg.h"
 
-#include <string>
-#include <vector>
-
-
-namespace Monero {
-
-class WalletImpl;
-class PendingTransactionImpl : public PendingTransaction
+TEST(Utils, cryptoMessage)
 {
-public:
-    PendingTransactionImpl(WalletImpl &wallet);
-    ~PendingTransactionImpl();
-    int status() const;
-    std::string errorString() const;
-    bool commit(const std::string &filename = "", bool overwrite = false);
-    uint64_t amount() const;
-    uint64_t dust() const;
-    uint64_t fee() const;
-    std::vector<std::string> txid() const;
-    uint64_t txCount() const;
-    bool save(std::ostream &stream);
-    std::vector<std::string> getRawTransaction() const override;
-    void updateTransactionCache() override;
-    // TODO: update for new rta tx structure
-    void putRtaSignatures(const std::vector<RtaSignature> &) override;
-private:
-    friend class WalletImpl;
-    WalletImpl &m_wallet;
+    using namespace crypto;
 
-    int  m_status;
-    std::string m_errorString;
-    std::vector<tools::wallet2::pending_tx> m_pending_tx;
-};
+    std::vector<public_key> vec_B;
+    std::vector<secret_key> vec_b;
+    for(int i = 0; i < 10; ++i)
+    {
+        public_key B; secret_key b;
+        generate_keys(B,b);
+        vec_B.emplace_back(std::move(B)); vec_b.emplace_back(std::move(b));
+    }
 
+    std::string data = "12345qwertasdfgzxcvb";
+    std::string message;
+    graft::crypto_tools::encryptMessage(data, vec_B, message);
 
+    for(const auto& b : vec_b)
+    {
+        std::string plain;
+        bool res = graft::crypto_tools::decryptMessage(message, b, plain);
+        EXPECT_EQ(res, true);
+        EXPECT_EQ(plain, data);
+    }
+
+    {//unknown key
+        public_key B; secret_key b;
+        generate_keys(B,b);
+
+        std::string plain;
+        bool res = graft::crypto_tools::decryptMessage(message, b, plain);
+        EXPECT_EQ(res, false);
+    }
+    {//corrupted key
+        secret_key b = vec_b[0];
+        b.data[ sizeof(b.data) - 1] ^= 0xFF;
+
+        std::string plain;
+        bool res = graft::crypto_tools::decryptMessage(message, b, plain);
+        EXPECT_EQ(res, false);
+    }
 }
-
-namespace Bitmonero = Monero;

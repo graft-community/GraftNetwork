@@ -453,6 +453,20 @@ namespace nodetool
 
     bool notify_peer_list(int command, const std::string& buf, const std::vector<peerlist_entry>& peers_to_send, bool try_connect = false);
 
+    void send_stakes_to_supernode();
+    void send_blockchain_based_list_to_supernode(uint64_t last_received_block_height);
+
+    uint64_t get_announce_bytes_in() const { return m_announce_bytes_in; }
+    uint64_t get_announce_bytes_out() const { return m_announce_bytes_out; }
+    uint64_t get_broadcast_bytes_in() const { return m_broadcast_bytes_in; }
+    uint64_t get_broadcast_bytes_out() const { return m_broadcast_bytes_out; }
+    uint64_t get_multicast_bytes_in() const { return m_multicast_bytes_in; }
+    uint64_t get_multicast_bytes_out() const { return m_multicast_bytes_out; }
+
+  private:
+    void handle_stakes_update(uint64_t block_number, const cryptonote::StakeTransactionProcessor::supernode_stake_array& stakes);
+    void handle_blockchain_based_list_update(uint64_t block_number, const cryptonote::StakeTransactionProcessor::supernode_tier_array& tiers);
+
   private:
     std::multimap<int, std::string> m_supernode_requests_timestamps;
     std::set<std::string> m_supernode_requests_cache;
@@ -509,6 +523,16 @@ namespace nodetool
 
     epee::critical_section m_host_fails_score_lock;
     std::map<std::string, uint64_t> m_host_fails_score;
+
+    // traffic counters
+    std::atomic<uint64_t> m_announce_bytes_in {0};
+    std::atomic<uint64_t> m_announce_bytes_out {0};
+    std::atomic<uint64_t> m_broadcast_bytes_in {0};
+    std::atomic<uint64_t> m_broadcast_bytes_out {0};
+    std::atomic<uint64_t> m_multicast_bytes_in {0};
+    std::atomic<uint64_t> m_multicast_bytes_out {0};
+
+
 
     bool m_testnet;
   };

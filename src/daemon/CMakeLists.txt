@@ -56,23 +56,7 @@ set(daemon_private_headers
   p2p.h
   protocol.h
   rpc.h
-  rpc_command_executor.h
-
-  # cryptonote_protocol
-  ../cryptonote_protocol/blobdatatype.h
-  ../cryptonote_protocol/cryptonote_protocol_defs.h
-  ../cryptonote_protocol/cryptonote_protocol_handler.h
-  ../cryptonote_protocol/cryptonote_protocol_handler.inl
-  ../cryptonote_protocol/cryptonote_protocol_handler_common.h
-
-  # p2p
-  ../p2p/net_node.h
-  ../p2p/net_node.inl
-  ../p2p/net_node_common.h
-  ../p2p/net_peerlist.h
-  ../p2p/net_peerlist_boost_serialization.h
-  ../p2p/p2p_protocol_defs.h
-  ../p2p/stdafx.h)
+  rpc_command_executor.h)
 
 monero_private_headers(daemon
   ${daemon_private_headers})
@@ -102,5 +86,8 @@ target_link_libraries(daemon
 add_dependencies(daemon version)
 set_property(TARGET daemon
   PROPERTY
-    OUTPUT_NAME "graftnoded")
+  OUTPUT_NAME "graftnoded${GRAFT_BINARY_SUFFIX}")
 install(TARGETS daemon DESTINATION bin)
+
+monero_install_headers(daemon
+    ${daemon_private_headers} ${daemon_headers})

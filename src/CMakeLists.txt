@@ -34,6 +34,10 @@ if (WIN32 OR STATIC)
   add_definitions(-DMINIUPNP_STATICLIB)
 endif ()
 
+if(NOT DEFINED GRAFT_BINARY_DIR)
+  set(GRAFT_BINARY_DIR "${PROJECT_BINARY_DIR}/bin")
+endif()
+
 function (monero_private_headers group)
   source_group("${group}\\Private"
     FILES
@@ -41,10 +45,15 @@ function (monero_private_headers group)
 endfunction ()
 
 function (monero_install_headers subdir)
-  install(
-    FILES       ${ARGN}
-    DESTINATION "include/${subdir}"
-    COMPONENT   development)
+  # Do this in a loop so that if someone gives a.h foo/bar.h we install a.h and foo/bar.h instead of
+  # a.h and bar.h
+  foreach (hdr ${ARGN})
+    get_filename_component(dir ${hdr} DIRECTORY)
+    install(
+      FILES       ${hdr}
+      DESTINATION "include/${GRAFT_INSTALL_INCLUDE_SUBDIR}/${subdir}/${dir}"
+      COMPONENT   development)
+  endforeach ()
 endfunction ()
 
 function (enable_stack_trace target)
@@ -73,7 +82,7 @@ function (monero_add_executable name)
       FOLDER "prog")
   set_property(TARGET "${name}"
     PROPERTY
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+      RUNTIME_OUTPUT_DIRECTORY "${GRAFT_BINARY_DIR}")
   enable_stack_trace("${name}")
 endfunction ()
 
@@ -98,13 +107,16 @@ function (monero_add_library name)
   set_property(TARGET "${name}" APPEND PROPERTY COMPILE_FLAGS "-fPIC")
   set_target_properties("${name}" PROPERTIES VERSION 0)
   install(TARGETS "${name}"
-    ARCHIVE DESTINATION lib/${CMAKE_LIBRARY_ARCHITECTURE}/graft
-    LIBRARY DESTINATION lib/${CMAKE_LIBRARY_ARCHITECTURE}/graft)
+    ARCHIVE DESTINATION lib/${CMAKE_LIBRARY_ARCHITECTURE}/${GRAFT_INSTALL_LIBRARY_SUBDIR}
+    LIBRARY DESTINATION lib/${CMAKE_LIBRARY_ARCHITECTURE}/${GRAFT_INSTALL_LIBRARY_SUBDIR})
 endfunction ()
+
+monero_install_headers("" cryptonote_config.h graft_rta_config.h)
 
 add_subdirectory(common)
 add_subdirectory(crypto)
 add_subdirectory(ringct)
+add_subdirectory(serialization)
 add_subdirectory(cryptonote_basic)
 add_subdirectory(cryptonote_core)
 if(NOT IOS)
@@ -115,9 +127,7 @@ if(NOT IOS)
   add_subdirectory(rpc)
 endif()
 add_subdirectory(wallet)
-if (NOT DISABLE_SUPERNODE)
 add_subdirectory(supernode)
-endif()
 if(NOT IOS)
   add_subdirectory(p2p)
 endif()
@@ -127,6 +137,7 @@ if(NOT IOS)
   add_subdirectory(daemonizer)
   add_subdirectory(daemon)
   add_subdirectory(blockchain_utilities)
+  add_subdirectory(utils)
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL Debug)

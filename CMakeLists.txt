@@ -35,8 +35,6 @@ cmake_minimum_required(VERSION 2.8.7)
 
 project(graftnetwork)
 
-set(DISABLE_SUPERNODE ${APPLE})
-
 function (die msg)
   if (NOT WIN32)
     string(ASCII 27 Esc)
@@ -54,6 +52,38 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
   message(STATUS "Setting default build type: ${CMAKE_BUILD_TYPE}")
 endif()
+
+if(CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
+    message("==> The configuration is ${CMAKE_BUILD_TYPE}. Debug info will be extracted into separate files.")
+
+    function (add_executable _name)
+        _add_executable(${ARGV})
+
+        if (TARGET ${_name})
+            add_custom_command(TARGET ${_name} POST_BUILD
+                COMMAND echo "$<TARGET_FILE_NAME:${_name}>: extracting debug info"
+                COMMAND ${CMAKE_COMMAND} -E chdir $<TARGET_FILE_DIR:${_name}> objcopy --only-keep-debug "$<TARGET_FILE_NAME:${_name}>" "$<TARGET_FILE_NAME:${_name}>.debug"
+                COMMAND ${CMAKE_COMMAND} -E chdir $<TARGET_FILE_DIR:${_name}> strip --strip-debug --strip-unneeded "$<TARGET_FILE_NAME:${_name}>"
+                COMMAND ${CMAKE_COMMAND} -E chdir $<TARGET_FILE_DIR:${_name}> objcopy --add-gnu-debuglink="$<TARGET_FILE_NAME:${_name}>.debug" "$<TARGET_FILE_NAME:${_name}>"
+            )
+        endif()
+    endfunction()
+
+    function (add_library _name _type)
+        _add_library(${ARGV})
+
+        if (TARGET ${_name} AND ${_type} STREQUAL SHARED)
+            add_custom_command(TARGET ${_name} POST_BUILD
+                COMMAND echo "$<TARGET_FILE_NAME:${_name}>: extracting debug info"
+                COMMAND ${CMAKE_COMMAND} -E chdir $<TARGET_FILE_DIR:${_name}> objcopy --only-keep-debug "$<TARGET_FILE_NAME:${_name}>" "$<TARGET_FILE_NAME:${_name}>.debug"
+                COMMAND ${CMAKE_COMMAND} -E chdir $<TARGET_FILE_DIR:${_name}> strip --strip-debug --strip-unneeded "$<TARGET_FILE_NAME:${_name}>"
+                COMMAND ${CMAKE_COMMAND} -E chdir $<TARGET_FILE_DIR:${_name}> objcopy --add-gnu-debuglink="$<TARGET_FILE_NAME:${_name}>.debug" "$<TARGET_FILE_NAME:${_name}>"
+            )
+        endif()
+    endfunction()
+
+endif(CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
+
 string(TOLOWER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_LOWER)
 
 # ARCH defines the target architecture, either by an explicit identifier or
@@ -109,6 +139,16 @@ endif()
 set(CMAKE_C_FLAGS_RELEASE "-DNDEBUG ${OPT_FLAGS_RELEASE}")
 set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${OPT_FLAGS_RELEASE}")
 
+add_definitions(-DMONERO_DEFAULT_LOG_CATEGORY="cryptonode" -DCMAKE_ROOT_SOURCE_DIR="${CMAKE_ROOT_SOURCE_DIR}")
+
+if(NOT DEFINED ENABLE_SYSLOG)
+    option(ENABLE_SYSLOG "SYSLOG support. It can be compiled for UNIX-like platforms only." OFF)
+endif()
+
+if(ENABLE_SYSLOG)
+    add_definitions(-DELPP_SYSLOG)
+endif()
+
 # set this to 0 if per-block checkpoint needs to be disabled
 set(PER_BLOCK_CHECKPOINT 0)
 
@@ -117,7 +157,7 @@ if(PER_BLOCK_CHECKPOINT)
 endif()
 
 list(INSERT CMAKE_MODULE_PATH 0
-  "${CMAKE_SOURCE_DIR}/cmake")
+  "${PROJECT_SOURCE_DIR}/cmake")
 
 if (NOT DEFINED ENV{DEVELOPER_LOCAL_TOOLS})
   message(STATUS "Could not find DEVELOPER_LOCAL_TOOLS in env (not required)")
@@ -181,6 +221,10 @@ if(CMAKE_SYSTEM_NAME MATCHES "kOpenBSD.*|OpenBSD.*")
   set(OPENBSD TRUE)
 endif()
 
+set(GRAFT_BINARY_SUFFIX "" CACHE STRING "optional suffix to add to the end of compiled binaries")
+set(GRAFT_INSTALL_INCLUDE_SUBDIR "graft" CACHE STRING "directory under 'include' to install files")
+set(GRAFT_INSTALL_LIBRARY_SUBDIR "graft" CACHE STRING "directory under 'lib/<arch>' to install libraries")
+
 # TODO: check bsdi, NetBSD, to see if they need the same FreeBSD changes
 #
 # elseif(CMAKE_SYSTEM_NAME MATCHES "kNetBSD.*|NetBSD.*")
@@ -188,7 +232,7 @@ endif()
 # elseif(CMAKE_SYSTEM_NAME MATCHES ".*BSDI.*")
 #   set(BSDI TRUE)
 
-include_directories(external/easylogging++ src contrib/epee/include external "${CMAKE_BINARY_DIR}/version")
+include_directories(external/easylogging++ src contrib/epee/include external "${PROJECT_BINARY_DIR}/version")
 
 if(APPLE)
   include_directories(SYSTEM /usr/include/malloc)

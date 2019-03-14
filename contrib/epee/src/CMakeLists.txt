@@ -27,10 +27,15 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 if (USE_READLINE AND GNU_READLINE_FOUND)
-  add_library(epee STATIC hex.cpp http_auth.cpp mlog.cpp string_tools.cpp memwipe.c readline_buffer.cpp)
+  add_library(epee hex.cpp http_auth.cpp mlog.cpp string_tools.cpp memwipe.c async_state_machine.cpp readline_buffer.cpp)
 else()
-  add_library(epee STATIC hex.cpp http_auth.cpp mlog.cpp string_tools.cpp memwipe.c)
+  add_library(epee hex.cpp http_auth.cpp mlog.cpp string_tools.cpp memwipe.c async_state_machine.cpp)
 endif()
+set_property(TARGET epee APPEND PROPERTY COMPILE_FLAGS "-fPIC")
+set_target_properties(epee PROPERTIES VERSION 0)
+install(TARGETS epee
+  ARCHIVE DESTINATION lib/${CMAKE_LIBRARY_ARCHITECTURE}/${GRAFT_INSTALL_LIBRARY_SUBDIR}
+  LIBRARY DESTINATION lib/${CMAKE_LIBRARY_ARCHITECTURE}/${GRAFT_INSTALL_LIBRARY_SUBDIR})
 
 if(HAVE_C11)
 SET_PROPERTY(SOURCE memwipe.c PROPERTY COMPILE_FLAGS -std=c11)

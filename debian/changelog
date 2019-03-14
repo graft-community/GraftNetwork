@@ -1,3 +1,9 @@
+graft-alpha (1.3.5.1+gc2-1) unstable; urgency=medium
+
+  * Fix SN sample algorithm to include T4 supernodes
+
+ -- Jason Rhinelander <jason@imaginary.ca>  Thu, 14 Mar 2019 12:18:21 -0300
+
 graft-alpha (1.3.5.1+gc1-1) unstable; urgency=medium
 
   * Alpha 5.1 deb release

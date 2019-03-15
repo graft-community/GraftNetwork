@@ -1,0 +1,51 @@
+Description: Fix C++17 nested namespace
+ fix for 'namespace a::b' which isn't supported before C++17.
+Author: Jason Rhinelander <jason@imaginary.ca>
+
+---
+The information above should follow the Patch Tagging Guidelines, please
+checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
+are templates for supplementary fields that you might want to add:
+
+Origin: <vendor|upstream|other>, <url of original patch>
+Bug: <url in upstream bugtracker>
+Bug-Debian: https://bugs.debian.org/<bugnumber>
+Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
+Forwarded: <no|not-needed|url proving that it has been forwarded>
+Reviewed-By: <name and email of someone who approved the patch>
+Last-Update: 2019-03-15
+
+--- graft-1.7.0+gc1.orig/src/utils/cryptmsg.h
++++ graft-1.7.0+gc1/src/utils/cryptmsg.h
+@@ -32,7 +32,7 @@
+ #include "crypto/crypto.h"
+ #include <vector>
+ 
+-namespace graft::crypto_tools {
++namespace graft { namespace crypto_tools {
+ 
+ /*!
+  * \brief encryptMessage - encrypts data for recipients using their B public keys (assumed public view keys).
+@@ -62,4 +62,4 @@ void encryptMessage(const std::string& i
+  */
+ bool decryptMessage(const std::string& input, const crypto::secret_key& bkey, std::string& output);
+ 
+-} //namespace graft::crypto_tools
++}} //namespace graft::crypto_tools
+--- graft-1.7.0+gc1.orig/src/utils/cryptmsg.cpp
++++ graft-1.7.0+gc1/src/utils/cryptmsg.cpp
+@@ -239,7 +239,7 @@ size_t decryptMsg(size_t inputSize, const uint8_t* input, const crypto::secret_k
+ 
+ } //namespace
+ 
+-namespace graft::crypto_tools {
++namespace graft { namespace crypto_tools {
+ 
+ void encryptMessage(const std::string& input, const std::vector<crypto::public_key>& Bkeys, std::string& output)
+ {
+@@ -284,5 +284,5 @@ bool decryptMessage(const std::string& input, const crypto::secret_key& bkey, st
+     return true;
+ }
+ 
+-} //namespace graft::crypto_tools
++}} //namespace graft::crypto_tools

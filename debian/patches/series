@@ -1,1 +1,3 @@
 add-debian-version
+fix-cpp17-nested-namespace
+fix-cpp14-static-asserts

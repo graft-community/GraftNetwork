@@ -1,3 +1,9 @@
+graft (1.7.0+gc1-2~deb9) stretch; urgency=medium
+
+  * Added missing dev package
+
+ -- Jason Rhinelander <jason@imaginary.ca>  Fri, 15 Mar 2019 01:40:27 -0300
+
 graft (1.7.0+gc1-1~deb9) stretch; urgency=medium
 
   * 1.7.0 "RTA Mining", community edition.

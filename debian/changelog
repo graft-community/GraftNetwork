@@ -1,3 +1,525 @@
+graft (1.7.0+gc1-1~ubuntu18.10) cosmic; urgency=medium
+
+  * 1.7.0 "RTA Mining", community edition.
+
+  [ Ilya Kitaev ]
+  * extra "allow_zero_fee" field added to tx
+  * temporary hardcoded zero fee into wallet2 class
+  * transaction: explicit static "type" field
+  * transaction `type` field moved to transaction_prefix
+  * construct_tx_and_get_tx_key: added transaction type parameter
+  * genesis tx with `type` field
+  * fixed `type` field serialization
+  * [WIP] implementing zero-fee tx
+  * [WIP] fixing unit tests for added field transaction_prefix.type
+  * [WIP] implementing fee split for auth sample
+
+  [ moneromooo-monero ]
+  * wallet2: fix exception on split txes
+  * wallet2: print unused indices on a single line
+
+  [ Ilya Kitaev ]
+  * [WIP] split fee by 8x destinations (auth sample)
+  * [WIP] split fee over auth sample
+  * [WIP] split fee - re-enabled other destinations
+  * Merge pull request #46 from IPGlider/change_testnet_prefix
+
+  [ laid37 ]
+  * Merge pull request #53 from mbg033/graft-rta-graft-version
+
+  [ Miguel Herranz ]
+  * Fix macOS build
+
+  [ Ilya Kitaev ]
+  * [WIP] implementing fee split for auth sample
+  * [WIP] split fee by 8x destinations (auth sample)
+  * [WIP] split fee over auth sample
+  * [WIP] split fee - re-enabled other destinations
+  * RTA: wallet2::create_transactions_graft - split fee over auth sample
+  * PendingTransaction: serialization high-level interfaces
+  * unit_tests: Serialization_portability_* tests fixed for new testnet address prefix
+  * [WIP] wallet2: load_tx, save_tx_signed interfaces with osstringstream
+  * wallet2::save_tx_signed, wallet2::load_tx done
+  * PendingTransaction: save_tx_signed, load_tx done
+  * PendingTransaction serialize: test improved
+  * PendingTransaction serialization: copy-pasted to GraftWallet;
+  * add: Utils library. moved lookup_account_outputs_ringct to Utils.
+  * wallet2::ptx_contains_my_outputs + tests done
+  * wallet2: renamed method
+  * WalletAPI: Wallet::getAmountFromTransaction + tests
+  * wallet2: cleaned commented code
+  * copy-pasted get_amount_from_tx to graft_wallet
+  * Removed empty namespace
+  * fix: return false instead of 0
+  * fix: remove extra local variable
+  * fix: one more extra variable removed
+
+  [ EDDragonWolf ]
+  * Extended wallet interface
+  * Added getRawTransaction method for PendingTransaction
+  * Fixed signature definition for GraftWallet
+  * Renamed supernode GraftWallet
+  * Scripts for ios binaries
+
+  [ Misha T ]
+  * remove allmost all blocking operations from boost::service::run() threads
+
+  [ EDDragonWolf ]
+  * Test changes for announce
+  * Added supernode announce callback to supernode
+  * Modidfied http client initialization for node-supernode communication
+  * Changed uri for RTA calls
+  * Renamed supernode_announce rpc request
+  * Changed body of supernode_announce call
+  * Fixed announce structures
+  * Added explicit POST call
+  * Added multicast and broadcast calls
+  * Returned exit from announce handler
+  * Fixed routes creation
+  * Added debug for routing
+  * Changed data structure for tunnels
+  * Fixed debug messages
+  * Removed cryptonode supernode address from multicast
+  * Added messages for handling tunnels
+  * Added more messages
+  * Fixed errors in notify_peer_list() method
+  * Added exclusive peers for multicast
+  * Added unicast implementation
+  * Added sender_address and wait_answer options for broadcast, multicast and unicast
+  * Registered unicast
+  * Refactored handlers code
+  * Added additional debugs for supernode announce
+  * Added JSON RPC header for supernode announce request
+  * Fixed checking of supernode address
+  * Added separate method for sending request to supernode
+  * Added RPC header for broadcast, multicast and uncast calls to the supernode
+  * Removed return for send announce
+  * Changed broadcasting flow for announce
+  * Fixed resend of announce
+  * Removed unused rpc and p2p calls
+  * Added more debug messages
+  * Added debug messages for notify new block
+  * Added debug messages for notfy new transaction
+  * Modified supernode_announce calls for hop mechanism
+
+  [ Ilya Kitaev ]
+  * changed network id for rta-dev testnet
+
+  [ EDDragonWolf ]
+  * Added hop mechanism for broadcast, multicast and unicast
+  * Added debug messages for hop mechnism investigation
+  * Added debug messages for hop mechnism investigation
+  * Replace debug message
+  * Changed supernode announce handling flow
+  * Changed order of checks for supernode announce
+  * Added additional debug messages
+  * Added additional debug messages
+  * Modified hop mechanism for rta calls
+  * Added caching mechanism for RTA calls
+  * Changed remove request cache flow
+  * Added remove old requests in supernode announce call
+
+  [ Ilya Kitaev ]
+  * fix: compilation error
+  * adjustment: GraftWallet -> GraftWallet2 renamings
+  * overloaded "wallet2::get_amount_from_tx" accepting transaction
+
+  [ EDDragonWolf ]
+  * Added createTransaction() method for multiply destinations
+  * Added self-sending of broadcast and multicast
+
+  [ Ilya Kitaev ]
+  * fix: compilation error
+  * add: rta_signatures field in transaction
+  * fix: GENESIS_TX
+  * moved type from transaction_prefix -> transaction
+  * add: Blockchain::testnet()
+  * add: serialization for rta_signatures and type fields
+  * moved transacrtion_pefix.type -> transaction.type
+  * verification_context: field for rta validation
+  * current tx version is 3
+  * tx_pool: added rta validation
+  * rta tx test
+  * fix for non-rta transaction validation
+  * fix: rta_signatures copied/assigned properly, added put_rta_signatures method
+  * PendingTransaction: added putRtaSignatures method
+  * Wallet::createTransactions: always create rta transaction
+  * tests: added one more RtaTransaction test
+  * rename: tx_type_zero_fee -> tx_type_rta
+  * Wallet::createTransaction: added "rtaTransaction" param
+
+  [ EDDragonWolf ]
+  * Removed duplicated check
+
+  [ Ilya Kitaev ]
+  * Revert "Merge branch 'test-bor' into develop"
+  * changed network id for rta-dev testnet
+  * changed seeds for rta private testnet
+  * version bump
+  * allow both tx v2 and tx v3
+  * use named constant instead of magic number
+
+  [ EDDragonWolf ]
+  * Increased HOP number for RTA casts
+  * Added UpdateTransactionCache interface for storing transactions
+  * Added self-sending of broadcast and multicast
+  * Fixed libwallet_merged creating
+  * Fixed clang compilation errors related to epee changes with state machine
+  * Fixed supernode log print
+
+  [ Ilya Kitaev ]
+  * fix: address isn't hex but base58
+  * fix: RTA validation error properly returned in sendtrawtransaction response
+
+  [ EDDragonWolf ]
+  * Added log messages for RTA casts
+  * Added debug messages for mutex locker
+  * Added separated mutex for request cache
+
+  [ Ilya Kitaev ]
+  * increased threads amount for rpc server
+  * network id for rta-aplha
+  * set tx ver 2 for non-rta txes
+  * seed nodes for rta alpha
+  * deleted buggy code - fixed sync with seed nodes
+  * timeout in milliseconds
+  * supernode announce: improved logging
+  * Revert "deleted buggy code - fixed sync with seed nodes"
+  * invoke_http_json: max allowed i/o time decreased to 1sec
+  * new seed nodes for rta-alpha1
+  * rta-alpha1: hardfork v10
+  * version bump
+
+  [ EDDragonWolf ]
+  * Disabled reconnect to peers for broadcasting of supernode_announce and broadcast calls
+  * Added extended log messages for RTA tunneling
+  * Added option for locking sending rta requests
+  * Added get_tunnels request for RTA tunneling data
+
+  [ Jason Rhinelander ]
+  * Add unspent-only balance/rescan methods
+
+  [ EDDragonWolf ]
+  * Added locking for RTA request handling
+  * Added new build target: release-static-locking
+  * Added new option for serializing data. Fixed bug with serializing connection data
+
+  [ Alexander Suprunenko ]
+  * New graftnoded command line parameter --log-format added that sets logging format. New custom format specifier %rfile outputs file path relative to topmost CMakeLists.txt.
+  * Syslog logging support added. --log-file=syslog command line parameter redirects logging to the syslog. Has no effect for non-Unix platforms.
+
+  [ Boris Itkis ]
+  * /get_peer_list: use network byte order for 'ip' field, use literal presentation for 'host' field
+
+  [ Ilya Kitaev ]
+  * log addresses for multicast, unicast and broadcast
+  * log addresses for multicast, unicast and broadcast
+
+  [ Alexander Suprunenko ]
+  * Fixed absence of logging into file when both --log-file and --log-format are set.
+
+  [ Ilya Kitaev ]
+  * add: p2p logging on incoming unicast, multicast and broadcast
+  * add: log destination address in notify_peer_list
+  * notify_peer_list: log connected peer address
+  * notify_peer_list: log addresses in human readable form
+  * added more log messages
+  * version bump
+
+  [ Alexander Suprunenko ]
+  * mlog_set_format is removed, mlog_configure sets format instead.
+
+  [ andrew ]
+  * Added an ability to pass seed-list and net-id from config file
+
+  [ EDDragonWolf ]
+  * Fixed initial seed connection problem. Refactored p2p communication.
+  * Fixed p2p logging issue
+
+  [ Ilya Kitaev ]
+  * default testnet ports for rta-alpha
+  * fix: get_peer_list ip address
+  * add: get_peer_list RPC - human readable last_seen
+
+  [ EDDragonWolf ]
+  * Fixed invoking announce using connection and white peer lists
+  * Blocked doubled RTA notifying
+  * Simplified hop conditions
+  * Refactored structures for routes handling
+  * Added supernode address for get_tunnels request. Removed unused code.
+  * Extended debug messages for handling hop counter and cast requests
+
+  [ Alexander Suprunenko ]
+  * Syslog logging support added.
+
+  [ Ilya Kitaev ]
+  * Extra build target for syslog-enabled configuration
+  * Merge pull request #188 from graft-project/fix/windows-build-unbound
+  * Updated build instructions and version
+  * rta-alpha2 hf
+  * extra target for syslog-static build
+  * removed workaround for openssl and Ubuntu 18.04
+  * "burning bug" fix from monero
+  * fix: do not replace outputs with the same pubkey, ignore them
+  * fix: logging - print actual amounts for txes with duplicated pkey
+
+  [ moneromooo-monero ]
+  * epee: fix invalid memory write reading an array entry
+  * epee: fix stack overflow on crafted input
+
+  [ Jan Beich ]
+  * epee: Drop deprecated Boost.Thread header
+
+  [ Teutone ]
+  * add .load() to make Boost 1.67 happy with its new is_integral check
+
+  [ Ilya Kitaev ]
+  * fixed rta_signature json serialization
+  * rta tx validation: improved error message
+  * HF12 adjustments for rta-alpha3
+  * fix: sweep_all fee
+  * alpha3 hf12 re-scheduled
+
+  [ Jason Rhinelander ]
+  * Allow one node to forward to multiple supernodes
+  * Fix insane log levels in net_node.inl
+  * Multi-sn fixes
+
+  [ Ilya Kitaev ]
+  * fix: sefgault on sync - dont copy p2p_connection_context
+
+  [ Jason Rhinelander ]
+  * Fix header/shared library build and installations
+  * Recognize tmux as supporting color
+  * Fixes to allow GraftNetwork to be built as subproject
+  * Add missing version dependency to p2p
+  * Add another missing dependency on version
+
+  [ Leny Kholodov ]
+  * Keep alive timeout for connection_base
+
+  [ Ilya Kitaev ]
+  * fix: Unxpected recv failed - increase http client timeout
+
+  [ Alexander Suprunenko ]
+  * Debug info extracted into separate files.
+  * after review. Default Release configuration rolled back.
+  * after review. release-static-linux-x86_64-debug-info rule added into makefile.
+
+  [ Leny Kholodov ]
+  * Keep alive timeout for connection_base
+
+  [ Jason Rhinelander ]
+  * Revert "Keep alive timeout for connection_base"
+  * Revert "Keep alive timeout for connection_base"
+
+  [ Leny Kholodov ]
+  * Update timeout. Add force shutdown during recv timeout
+
+  [ Ilya Kitaev ]
+  * Revert "Update timeout. Add force shutdown during recv timeout"
+  * fix: memleak in case libwallet running in multithreaded mode
+  * blocked_mode_client: io_service can be shared between multiple instances
+  * indents fixed
+
+  [ Jason Rhinelander ]
+  * Fix current block height estimate for RTA testnet
+
+  [ Leny Kholodov ]
+  * Protect connection_context_base from self assignments
+
+  [ Ilya Kitaev ]
+  * connection_context_base self assignment warning
+  * fix: find existing connection
+  * changed alpha4 version number
+
+  [ Jason Rhinelander ]
+  * Fix compilation error
+
+  [ ston1th ]
+  * monerod: do not log to tmpdir in daemon mode
+
+  [ Ilya Kitaev ]
+  * disable logging to tmp-dir
+  * fix: segfault while logging deleted connections
+  * fix: segfault while logging deleted connections
+
+  [ moneromooo-monero ]
+  * abstract_tcp_server2: fix race on shutdown
+
+  [ Ilya Kitaev ]
+  * Release alpha 4.1. version bump
+
+  [ Jason Rhinelander ]
+  * Don't build supernode in gc-alpha
+
+  [ Leny Kholodov ]
+  * Stake wallet transaction in simplewallet
+
+  [ Ilya Kitaev ]
+  * fix: do_broadcast, do_supernode_announce: notify called outside of foreach_connection loop
+
+  [ Leny Kholodov ]
+  * Fix for attaching tx secret key to stake transactions
+  * Transaction extra tag has been updated
+  * Adding supernode signature to stake transaction
+
+  [ Jason Rhinelander ]
+  * Reenable supernode directory, disable binary
+
+  [ Ilya Kitaev ]
+  * announce sent to all and relayed with probability 1/N
+  * do not handle connections without handshake
+  * fix: find_connection_id_by_peer finds only connected connection
+  * deleted unused method
+  * fix: random generator is static
+  * Release alpha 4.2
+  * removed debuggin code
+  * removed monero seeds
+
+  [ Jason Rhinelander ]
+  * Add method for getting g-c's multi-sn addresses
+  * Fix deadlock in supernode address lookups
+
+  [ Alexander Suprunenko ]
+  * Message Encryption functions added.
+  * Copyright added.
+  * Big-endian support added.
+  * after review. Low level separated.
+
+  [ Leny Kholodov ]
+  * Stake transaction validation
+  * Alternative chains processing for stake transaction validation
+  * Tier & amount for stake transaction. Remove obsolete transactions from update requests. Stake transaction validation: unlock_time fix
+  * Add stake transaction amount validation
+  * Limit unlock time by STAKE_MIN_UNLOCK_TIME
+  * Move supernode signature validation to cryptonode
+  * Add graft_rta_config.h with constants for RTA validation process
+  * Disable checks which can't be tested at this moment
+  * Tests fix
+  * Fixing stake transactions notification
+  * Stake transaction hash as a hex string
+  * Stake wallet warning
+  * Tier & amount for stake transaction. Remove obsolete transactions from update requests
+  * BlockchainBasedList implementation
+  * Blockchain based list communication between cryptonode and supernode
+  * Tiers & alternative chains processing for blockchain based list
+  * Blockchain based list implementation update: using Mersenne-Twister instead of direct selection random values from block hash
+  * Tests fix
+  * Blockchain based list communication from supernode to cryptonode
+  * Deterministic sorting of supernodes
+  * Send supernode public wallet address to supernode
+
+  [ Ilya Kitaev ]
+  * updated announce messages
+  * add: last_announce_time
+  * fix: do_broadcast, do_supernode_announce: notify called outside of foreach_connection loop
+  * announce sent to all and relayed with probability 1/N
+  * do not handle connections without handshake
+  * fix: find_connection_id_by_peer finds only connected connection
+  * deleted unused method
+  * fix: random generator is static
+  * Release alpha 4.2
+  * removed debuggin code
+  * removed monero seeds
+  * fix: deadlock due 'print_connection_container' inside logger macro
+
+  [ Leny Kholodov ]
+  * Fixes after rebase
+  * Debug logging
+  * Send blockchain_based_list for each block
+  * Simplify stake wallet transaction sending. Add CLI side checks
+  * Move stake transactions cache and blockchain based list to data directory
+
+  [ Ilya Kitaev ]
+  * fix: rpc server: supernode address -> supernode id
+  * version bump
+
+  [ Leny Kholodov ]
+  * Sending several blockchain based lists to supernode during the start
+
+  [ Ilya Kitaev ]
+  * add: rta/get_stats RPC call to get RTA network io stats
+  * rta-alpha5 hf13
+
+  [ Jason Rhinelander ]
+  * Fix missing header in cmake
+
+  [ EDDragonWolf ]
+  * Added RTA fixed fee support
+
+  [ Leny Kholodov ]
+  * Use get_block_hash_from_height(height) instead of block.hash, post obsolete stake transactions with zero amount to supernode to indicate supernode presense, stable_sort instead of sort for blockchain based list building
+  * Add periodic batch blockchain based list update
+  * Use supernode aggregated stakes instead of stake transactions
+  * Linking blockchain based list with supernode stakes based on block number. Passing stake amount along with blockchain based list to supernode
+
+  [ Ilya Kitaev ]
+  * fix: tests build
+  * add: Utils::get_tx_amount
+
+  [ Jason Rhinelander ]
+  * Fix compilation under gcc8
+
+  [ Leny Kholodov ]
+  * Send block number along with stakes to supernode
+  * Enable supernode signature checking during validation of stake transactions
+  * Increase stake transactions min unlock time for wallet cli
+
+  [ Ilya Kitaev ]
+  * RTA transaction
+  * Revert "[WIP] fixing unit tests for added field transaction_prefix.type"
+  * predefined key indexes fro pos, pos-proxy, wallet-proxy
+  * tx_extra contant - temporary revert
+  * rta tx validation
+  * add: "create_rta_tx" wallet rpc
+  * RTA tx validation + tests
+  * rta-tx: check if supernode is valid
+  * rename: create_rta_tx->transfer_rta
+
+  [ Leny Kholodov ]
+  * Protect stake transactions processor from error during transactions parsing
+
+  [ Ilya Kitaev ]
+  * reverted "address" in rta_signature
+  * version bump
+  * rta tx signatures moved to tx.extra2
+  * tx_extra: TX_EXTRA_GRAFT_STAKE_TX_TAG id moved to 0x80
+  * fix: windows build
+  * core::m_graft_stake_transaction_processor initialized with proper folder
+  * StakeTransactionProcessor::synchronize() - catching lmdb exceptions
+  * allow RTA transactions after hf13
+  * HF13 for private testnet
+  * add: rta signatures for "transfer_rta" RPC call
+  * rta-mining transfer fee increased to 1 GRFT
+
+  [ EDDragonWolf ]
+  * Fixed conflicts in validate_transfer function
+
+  [ Ilya Kitaev ]
+  * HF13, v1.7.0
+  * HF13 for public testnet re-scheduled
+  * restored public testnet/mainnet seeds
+  * restored public testnet network id and default ports
+
+  [ Leny Kholodov ]
+  * Change previous blockchain based list size to 16
+  * Update blockchain based list from the beginning
+
+  [ Jason Rhinelander ]
+  * Fix SN sample algorithm to include T4 supernodes
+
+  [ Leny Kholodov ]
+  * Update min unlock time for wallet and for daemon
+
+  [ Jason Rhinelander ]
+  * Fix SN sample algorithm to include T4 supernodes
+
+  [ Leny Kholodov ]
+  * Add hardfork check for stake transactions and wait for block hashes to be received
+
+ -- Jason Rhinelander <jason@imaginary.ca>  Thu, 14 Mar 2019 19:18:30 -0300
+
 graft (1.6.0-1~ubuntu18.10) cosmic; urgency=medium
 
   * Initial cosmic release.

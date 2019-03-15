@@ -30,12 +30,12 @@
 
 # include (${PROJECT_SOURCE_DIR}/cmake/libutils.cmake)
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
 set(supernode_sources
     api/pending_transaction.cpp
     healthcheckapi.cpp
-    graft_wallet.cpp
+    graft_wallet2.cpp
     wallet_args.cpp
     node_rpc_proxy.cpp
     AuthSample.cpp
@@ -65,29 +65,34 @@ set(supernode_api_headers)
 
 set(supernode_private_headers
     api/pending_transaction.h
-    healthcheckapi.h
-    graft_defines.h
-    graft_wallet.h
-    wallet_args.h
-    wallet_errors.h
-    node_rpc_proxy.h
     AuthSample.h
     AuthSampleObject.h
+    baseclientproxy.h
     BaseRTAObject.h
     BaseRTAProcessor.h
-    baseclientproxy.h
     DAPI_RPC_Client.h
     DAPI_RPC_Server.h
+    FSN_ActualList.h
+    FSN_ServantBase.h
     FSN_Servant.h
+    FSN_Servant_Test.h
+    graft_defines.h
+    grafttxextra.h
+    graft_wallet2.h
+    healthcheckapi.h
+    node_rpc_proxy.h
+    P2P_Broadcast.h
     PosProxy.h
     PosSaleObject.h
     SubNetBroadcast.h
-    WalletPayObject.h
-    WalletProxy.h
-    P2P_Broadcast.h
     supernode_common_struct.h
     supernode_rpc_command.h
+    supernode_helpers.h
     TxPool.h
+    wallet_args.h
+    wallet_errors.h
+    WalletPayObject.h
+    WalletProxy.h
     WorkerPool.h)
 
 monero_private_headers(supernode
@@ -108,6 +113,7 @@ target_link_libraries(supernode
     blockchain_db
     cncrypto
     cryptonote_protocol
+    utils
     ${Boost_CHRONO_LIBRARY}
     ${Boost_SERIALIZATION_LIBRARY}
     ${Boost_FILESYSTEM_LIBRARY}
@@ -118,7 +124,7 @@ target_link_libraries(supernode
     ${EXTRA_LIBRARIES})
 add_dependencies(supernode version)
 
-if (NOT BUILD_GUI_DEPS)
+if (FALSE)
     set(supernode_rpc_sources
         main.cpp
         )
@@ -156,10 +162,12 @@ if (NOT BUILD_GUI_DEPS)
     add_dependencies(supernode_rpc_server version)
     set_property(TARGET supernode_rpc_server
         PROPERTY
-        OUTPUT_NAME "graft-supernode")
+        OUTPUT_NAME "graft-supernode${GRAFT_BINARY_SUFFIX}")
     install(TARGETS supernode_rpc_server DESTINATION bin)
 endif()
 
+monero_install_headers(supernode
+    ${supernode_private_headers} ${supernode_api_headers} ${supernode_rpc_headers} ${supernode_rpc_private_headers})
 
 # build and install libsupernode_merged only if we building for GUI
 if (BUILD_GUI_DEPS)

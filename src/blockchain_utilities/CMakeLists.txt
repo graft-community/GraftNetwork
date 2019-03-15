@@ -66,7 +66,6 @@ set(blockchain_export_private_headers
 monero_private_headers(blockchain_export
 	  ${blockchain_export_private_headers})
 
-
 monero_add_executable(blockchain_import
   ${blockchain_import_sources}
   ${blockchain_import_private_headers}
@@ -93,7 +92,7 @@ add_dependencies(blockchain_import
 	version)
 set_property(TARGET blockchain_import
 	PROPERTY
-	OUTPUT_NAME "graft-blockchain-import.stable")
+    OUTPUT_NAME "graft-blockchain-import${GRAFT_BINARY_SUFFIX}")
 install(TARGETS blockchain_import DESTINATION bin)
 
 monero_add_executable(blockchain_export
@@ -111,6 +110,9 @@ target_link_libraries(blockchain_export
     ${Boost_THREAD_LIBRARY}
     ${CMAKE_THREAD_LIBS_INIT}
     ${EXTRA_LIBRARIES})
+
+monero_install_headers(blockchain_utilities
+  ${blockchain_import_private_headers} ${blockchain_export_private_headers})
 
 add_dependencies(blockchain_export
 	version)

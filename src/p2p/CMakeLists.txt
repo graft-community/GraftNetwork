@@ -26,16 +26,28 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cmake_minimum_required (VERSION 2.6)
-project (monero CXX)
+set(p2p_sources
+  connection_basic.cpp
+  network_throttle.cpp
+  network_throttle-detail.cpp)
 
-file(GLOB P2P *)
-source_group(p2p FILES ${P2P})
+set(p2p_headers)
 
-#add_library(p2p ${P2P})
+set(p2p_private_headers
+  net_node_common.h
+  net_node.h
+  net_node.inl
+  net_peerlist_boost_serialization.h
+  net_peerlist.h
+  p2p_protocol_defs.h)
 
-#monero_private_headers(p2p ${P2P})
-monero_add_library(p2p ${P2P})
+
+monero_private_headers(p2p
+  ${p2p_private_headers})
+monero_add_library(p2p
+  ${p2p_sources}
+  ${p2p_headers}
+  ${p2p_private_headers})
 target_link_libraries(p2p
   PUBLIC
     epee
@@ -47,5 +59,8 @@ target_link_libraries(p2p
     ${Boost_THREAD_LIBRARY}
   PRIVATE
     ${EXTRA_LIBRARIES})
-add_dependencies(p2p
-  version)
+
+add_dependencies(p2p version)
+
+monero_install_headers(p2p
+    ${p2p_private_headers} ${p2p_headers})

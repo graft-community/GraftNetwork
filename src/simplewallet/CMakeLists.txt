@@ -57,7 +57,9 @@ target_link_libraries(simplewallet
     ${EXTRA_LIBRARIES})
 add_dependencies(simplewallet
   version)
+monero_install_headers(simplewallet
+    ${simplewallet_private_headers} ${simplewallet_headers})
 set_property(TARGET simplewallet
   PROPERTY
-    OUTPUT_NAME "graft-wallet-cli.stable")
+    OUTPUT_NAME "graft-wallet-cli${GRAFT_BINARY_SUFFIX}")
 install(TARGETS simplewallet DESTINATION bin)

@@ -1,0 +1,20 @@
+#!/bin/sh
+
+set -e
+
+case "$1" in
+  remove|deconfigure)
+    update-alternatives --remove graft-includes /usr/include/graft.stable
+    ;;
+
+  upgrade|failed-upgrade)
+    ;;
+
+  *)
+    echo "prerm called with unknown argument '$1'" >&2
+    exit 0
+    ;;
+esac
+
+exit 0
+

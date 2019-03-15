@@ -1,3 +1,9 @@
+graft (1.7.0+gc1-2) unstable; urgency=medium
+
+  * Added missing dev package
+
+ -- Jason Rhinelander <jason@imaginary.ca>  Fri, 15 Mar 2019 01:35:28 -0300
+
 graft (1.7.0+gc1-1) unstable; urgency=medium
 
   * 1.7.0 "RTA Mining", community edition.

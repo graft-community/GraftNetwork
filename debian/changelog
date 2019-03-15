@@ -1,3 +1,10 @@
+graft (1.7.0+gc1-2~ubuntu16.04) xenial; urgency=medium
+
+  * Fix xenial compilation errors
+  * Added missing dev package
+
+ -- Jason Rhinelander <jason@imaginary.ca>  Fri, 15 Mar 2019 01:39:56 -0300
+
 graft (1.7.0+gc1-1~ubuntu16.04) xenial; urgency=medium
 
   * 1.7.0 "RTA Mining", community edition.

@@ -19,7 +19,7 @@ Description: GRAFT network libraries
 Package: graftnoded
 Architecture: any
 Depends: libgraft0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
-Suggests: graft-blockchain-tools
+Suggests: graft-blockchain-tools, graft-supernode
 Description: GRAFT node
  This package contains the GRAFT P2P node, graftnoded, for synchronizing and
  supporting the GRAFT blockchain.

@@ -118,10 +118,6 @@ add_dependencies(blockchain_export
 	version)
 set_property(TARGET blockchain_export
 	PROPERTY
-<<<<<<< HEAD
-	OUTPUT_NAME "graft-blockchain-export.stable")
-=======
     OUTPUT_NAME "graft-blockchain-export${GRAFT_BINARY_SUFFIX}")
->>>>>>> master
 install(TARGETS blockchain_export DESTINATION bin)
 

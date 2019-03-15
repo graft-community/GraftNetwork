@@ -1,5 +1,5 @@
-Description: Set custom version tag
- Changes the version tag to be based on the debian revision.
+Description: add debian version tag
+ Add support for appending to debian version to the binaries via a cmake option.
 Author: Jason Rhinelander <jason@imaginary.ca>
 
 ---
@@ -13,12 +13,16 @@ Bug-Debian: https://bugs.debian.org/<bugnumber>
 Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
 Forwarded: <no|not-needed|url proving that it has been forwarded>
 Reviewed-By: <name and email of someone who approved the patch>
-Last-Update: 2018-11-23
+Last-Update: 2019-03-15
 
---- graft-1.5.1.orig/version.cmake
-+++ graft-1.5.1/version.cmake
-@@ -9,6 +9,8 @@ find_package(Git QUIET)
- if ("$Format:$" STREQUAL "")
+--- graft-1.7.0+gc1.orig/version.cmake
++++ graft-1.7.0+gc1/version.cmake
+@@ -10,9 +10,11 @@ endfunction ()
+ 
+ file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/version")
+ find_package(Git QUIET)
+-if ("" STREQUAL "")
++if ("$Format:$" STREQUAL "")
    # We're in a tarball; use hard-coded variables.
    write_static_version_header("release")
 +elseif (DEBIAN_VERSION_SUFFIX)

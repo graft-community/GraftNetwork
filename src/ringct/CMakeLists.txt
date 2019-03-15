@@ -37,7 +37,8 @@ set(ringct_headers)
 set(ringct_private_headers
   rctOps.h
   rctSigs.h
-  rctTypes.h)
+  rctTypes.h
+  rctCryptoOps.h)
 
 monero_private_headers(ringct
   ${crypto_private_headers})
@@ -52,3 +53,6 @@ target_link_libraries(ringct
     cryptonote_basic
   PRIVATE
     ${EXTRA_LIBRARIES})
+
+monero_install_headers(ringct
+    ${ringct_private_headers} ${ringct_headers})

@@ -28,3 +28,8 @@
 
 add_subdirectory(src)
 
+install(
+  DIRECTORY   include/
+  DESTINATION include/${GRAFT_INSTALL_INCLUDE_SUBDIR}
+  COMPONENT   development
+  FILES_MATCHING PATTERN "*.h" PATTERN "*.inl")

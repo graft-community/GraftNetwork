@@ -100,3 +100,9 @@ endif()
 
 add_subdirectory(db_drivers)
 add_subdirectory(easylogging++)
+
+install(
+  DIRECTORY boost
+  DESTINATION include/${GRAFT_INSTALL_INCLUDE_SUBDIR}
+  COMPONENT   development
+  FILES_MATCHING PATTERN "*.hpp")

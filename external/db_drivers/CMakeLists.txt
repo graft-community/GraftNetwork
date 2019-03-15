@@ -32,3 +32,9 @@ message(STATUS "Using ${ARCH_WIDTH}-bit LMDB from source tree")
 add_subdirectory(liblmdb)
 set(LMDB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/liblmdb" CACHE STRING "LMDB Include path")
 set(LMDB_LIBRARY "lmdb" CACHE STRING "LMDB Library name")
+
+install(
+  DIRECTORY liblmdb/
+  DESTINATION include/${GRAFT_INSTALL_INCLUDE_SUBDIR}
+  COMPONENT   development
+  FILES_MATCHING PATTERN "*.h")

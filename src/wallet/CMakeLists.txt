@@ -28,10 +28,11 @@
 
 # include (${PROJECT_SOURCE_DIR}/cmake/libutils.cmake)
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
 set(wallet_sources
   wallet2.cpp
+  graft_wallet.cpp
   wallet_args.cpp
   node_rpc_proxy.cpp
   api/wallet.cpp
@@ -49,6 +50,7 @@ set(wallet_api_headers
 
 set(wallet_private_headers
   wallet2.h
+  graft_wallet.h
   wallet_args.h
   wallet_errors.h
   wallet_rpc_server.h
@@ -76,6 +78,7 @@ target_link_libraries(wallet
     cryptonote_core
     mnemonics
     p2p
+    utils
     ${Boost_CHRONO_LIBRARY}
     ${Boost_SERIALIZATION_LIBRARY}
     ${Boost_FILESYSTEM_LIBRARY}
@@ -119,14 +122,18 @@ if (NOT BUILD_GUI_DEPS)
   add_dependencies(wallet_rpc_server version)
   set_property(TARGET wallet_rpc_server
     PROPERTY
-      OUTPUT_NAME "graft-wallet-rpc.stable")
+      OUTPUT_NAME "graft-wallet-rpc${GRAFT_BINARY_SUFFIX}")
   install(TARGETS wallet_rpc_server DESTINATION bin)
 endif()
+
+monero_install_headers(wallet
+    ${wallet_api_headers} ${wallet_private_headers}
+    ${wallet_rpc_headers} ${wallet_rpc_private_headers})
 
 
 # build and install libwallet_merged only if we building for GUI
 if (BUILD_GUI_DEPS)
-    set(libs_to_merge wallet cryptonote_core cryptonote_basic mnemonics common cncrypto ringct)
+    set(libs_to_merge wallet cryptonote_core cryptonote_basic mnemonics common cncrypto ringct utils)
 
     foreach(lib ${libs_to_merge})
         list(APPEND objlibs $<TARGET_OBJECTS:obj_${lib}>) # matches naming convention in src/CMakeLists.txt

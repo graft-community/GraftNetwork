@@ -30,7 +30,10 @@ set(cryptonote_core_sources
   blockchain.cpp
   cryptonote_core.cpp
   tx_pool.cpp
-  cryptonote_tx_utils.cpp)
+  cryptonote_tx_utils.cpp
+  stake_transaction_storage.cpp
+  stake_transaction_processor.cpp
+  blockchain_based_list.cpp)
 
 set(cryptonote_core_headers)
 
@@ -39,7 +42,10 @@ set(cryptonote_core_private_headers
   blockchain.h
   cryptonote_core.h
   tx_pool.h
-  cryptonote_tx_utils.h)
+  cryptonote_tx_utils.h
+  stake_transaction_storage.h
+  stake_transaction_processor.h
+  blockchain_based_list.h)
 
 if(PER_BLOCK_CHECKPOINT)
   set(Blocks "blocks")
@@ -48,7 +54,7 @@ else()
 endif()
 
 monero_private_headers(cryptonote_core
-  ${crypto_private_headers})
+  ${cryptonote_core_private_headers})
 monero_add_library(cryptonote_core
   ${cryptonote_core_sources}
   ${cryptonote_core_headers}
@@ -69,3 +75,8 @@ target_link_libraries(cryptonote_core
   PRIVATE
     ${Blocks}
     ${EXTRA_LIBRARIES})
+
+add_dependencies(cryptonote_core version)
+
+monero_install_headers(cryptonote_core
+    ${cryptonote_core_private_headers} ${cryptonote_core_headers})

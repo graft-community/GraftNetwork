@@ -56,3 +56,6 @@ target_link_libraries(rpc
     ${EXTRA_LIBRARIES})
 add_dependencies(rpc
   version)
+
+monero_install_headers(rpc
+    ${rpc_private_headers} ${rpc_headers})

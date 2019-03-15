@@ -99,4 +99,6 @@ if (ANDROID OR IOS)
   endif()
 endif()
 
+monero_install_headers(crypto
+  ${crypto_headers} ${crypto_private_headers})
 

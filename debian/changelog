@@ -1,3 +1,13 @@
+graft (1.7.1+gc1-1) unstable; urgency=medium
+
+  [ Ilya Kitaev ]
+  * fix: restored network-id for mainnet
+  * fix: "Config file.." message after logging initialized
+  * updated copyright year and version bump
+  * HF13 re-scheduled to 2019-03-20
+
+ -- Jason Rhinelander <jason@imaginary.ca>  Sat, 16 Mar 2019 12:14:29 -0300
+
 graft (1.7.0+gc1-2) unstable; urgency=medium
 
   * Added missing dev package

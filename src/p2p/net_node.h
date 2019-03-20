@@ -247,7 +247,7 @@ namespace nodetool
         typename request_struct::response resp = AUTO_VAL_INIT(resp);
         bool r = epee::net_utils::invoke_http_json(supernode.uri + uri,
                                                    req, resp, supernode.client,
-                                                   std::chrono::milliseconds(SUPERNODE_HTTP_TIMEOUT_MILLIS), "POST");
+                                                   std::chrono::milliseconds(size_t(SUPERNODE_HTTP_TIMEOUT_MILLIS)), "POST");
         if (!r || resp.status == 0)
         {
             return 0;

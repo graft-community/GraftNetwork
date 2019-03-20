@@ -8,7 +8,7 @@ override_dh_auto_configure:
 		-DENABLE_SYSLOG=ON -DARCH=westmere -DCMAKE_CXX_FLAGS="-mtune=haswell" -DCMAKE_C_FLAGS="-mtune=haswell" \
 		-DGRAFT_BINARY_SUFFIX=.stable -DGRAFT_INSTALL_INCLUDE_SUBDIR=graft.stable -DGRAFT_INSTALL_LIBRARY_SUBDIR=graft.stable \
 		-DCMAKE_INSTALL_RPATH=/usr/lib/$(DEB_HOST_MULTIARCH)/graft.stable \
-		-DDEBIAN_VERSION_SUFFIX=$(shell dpkg-parsechangelog -SVersion | sed -e 's/[^-]*-//')-graft.community
+		-DDEBIAN_VERSION_SUFFIX=$(shell dpkg-parsechangelog -SVersion | sed -e 's/[^+-]*[+-]//')-graft.community
 
 override_dh_shlibdeps:
 	dh_shlibdeps -l/usr/lib/$(DEB_HOST_MULTIARCH)/graft.stable

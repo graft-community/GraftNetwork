@@ -1,3 +1,29 @@
+graft (1.7.2+gc1-1~deb9) stretch; urgency=medium
+
+  [ Jason Rhinelander ]
+  * Fix compilation under C++11 compilers
+
+  [ Leny Kholodov ]
+  * Unroll alternative chains in case of different height. Remove warning about invalid block height
+
+  [ bitkis ]
+  * Update README.md (#256)
+
+  [ Leny Kholodov ]
+  * Change stakes user validation period according to STAKE_VALIDATION_PERIOD and TRUSTED_RESTAKING_PERIOD constants
+  * Fix blockchain based list usage of previous blockchain based list
+  * Optimize first initialization of stakes storage and blockchain based list
+
+  [ Ilya Kitaev ]
+  * log severity decreased for rta log records in net_node
+  * build: -fPIC enabled for both static/dynamic builds
+  * version bump
+
+  [ Jason Rhinelander ]
+  * Override version suffix to match graft-ng suffix
+
+ -- Jason Rhinelander <jason@imaginary.ca>  Tue, 19 Mar 2019 21:22:19 -0300
+
 graft (1.7.1+gc1-1~deb9) stretch; urgency=medium
 
   [ Ilya Kitaev ]

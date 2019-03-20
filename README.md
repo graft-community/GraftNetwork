@@ -73,7 +73,7 @@ Dates are provided in the format YYYY-MM-DD.
 | 2018-09-17        | v10               | 1.4.4                | 1.4.5                    | Block reward halved       |
 | 2018-10-31        | v11               | 1.5.0                | 1.5.1                    | PoW algorithm from Monero v8 (CN v2), enabled checkpoints for mainnet  |
 | 2019-03-07        | v12               | 1.6.0                | 1.6.0                    | Own PoW algorithm - CryptoNight V8 ReverseWaltz - tweaked from CryptoNight Monero v8 (CN v2)  |
-| 2019-03-18        | v13               | 1.7.1                | 1.7.1                    | RTA Mining  |
+| 2019-03-20        | v13               | 1.7.2                | 1.7.2                    | RTA Mining  |
 
 ## Installing Graft Network from a Package
 
@@ -82,6 +82,8 @@ Not available yet!
 ## Compiling Graft Network from Source
 
 ### Dependencies
+
+**Due to gcc 7.3.0 being a hard requirement right now, we strongly recomend to use Ubuntu 18.04 as a build platform**
 
 The following table summarizes the tools and libraries required to build.  A
 few of the libraries are also included in this repository (marked as
@@ -116,12 +118,11 @@ build the library binary manually. This can be done with the following command `
 ### Cloning the repository
 Clone recursively to pull-in needed submodule(s):
 
-         git clone --recursive https://github.com/graft-project/GraftNetwork
+         git clone --recurse-submodules https://github.com/graft-project/GraftNetwork
 
 If you already have a repo cloned, initialize and update:
 
-         cd GraftNetwork && git submodule init && git submodule update
-
+         cd GraftNetwork
 
 
 ### Build instructions

@@ -1,3 +1,9 @@
+graft (1.7.3+gc2-1) unstable; urgency=medium
+
+  * Lower log level of supernode requests
+
+ -- Jason Rhinelander <jason@imaginary.ca>  Sat, 23 Mar 2019 16:02:31 -0300
+
 graft (1.7.3+gc1-1) unstable; urgency=medium
 
   * New upstream release 1.7.3

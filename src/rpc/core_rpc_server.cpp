@@ -1761,7 +1761,7 @@ namespace cryptonote
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_supernode_announce(const COMMAND_RPC_SUPERNODE_ANNOUNCE::request &req, COMMAND_RPC_SUPERNODE_ANNOUNCE::response &res, json_rpc::error &error_resp)
   {
-      LOG_PRINT_L0("RPC Request: on_supernode_announce: start");
+      MDEBUG("RPC Request: on_supernode_announce: start");
       if (!check_core_busy())
       {
         error_resp.code = CORE_RPC_ERROR_CODE_CORE_BUSY;
@@ -1773,14 +1773,14 @@ namespace cryptonote
       m_p2p.add_supernode(req.supernode_public_id, req.network_address);
       m_p2p.do_supernode_announce(req);
       res.status = 0;
-      LOG_PRINT_L0("RPC Request: on_supernode_announce: end");
+      MDEBUG("RPC Request: on_supernode_announce: end");
       return true;
   }
 
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_supernode_stakes(const COMMAND_RPC_SUPERNODE_GET_STAKES::request &req, COMMAND_RPC_SUPERNODE_GET_STAKES::response &res, json_rpc::error &error_resp)
   {
-      LOG_PRINT_L0("RPC Request: on_supernode_stakes: start");
+      MDEBUG("RPC Request: on_supernode_stakes: start");
       if (!check_core_busy())
       {
         error_resp.code = CORE_RPC_ERROR_CODE_CORE_BUSY;
@@ -1792,14 +1792,14 @@ namespace cryptonote
       m_p2p.add_supernode(req.supernode_public_id, req.network_address);
       m_p2p.send_stakes_to_supernode();
       res.status = 0;
-      LOG_PRINT_L0("RPC Request: on_supernode_stakes: end");
+      MDEBUG("RPC Request: on_supernode_stakes: end");
       return true;
   }
 
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_supernode_blockchain_based_list(const COMMAND_RPC_SUPERNODE_GET_BLOCKCHAIN_BASED_LIST::request &req, COMMAND_RPC_SUPERNODE_GET_BLOCKCHAIN_BASED_LIST::response &res, json_rpc::error &error_resp)
   {
-      LOG_PRINT_L0("RPC Request: on_supernode_blockchain_based_list: start");
+      MDEBUG("RPC Request: on_supernode_blockchain_based_list: start");
       if (!check_core_busy())
       {
         error_resp.code = CORE_RPC_ERROR_CODE_CORE_BUSY;
@@ -1811,14 +1811,14 @@ namespace cryptonote
       m_p2p.add_supernode(req.supernode_public_id, req.network_address);
       m_p2p.send_blockchain_based_list_to_supernode(req.last_received_block_height);
       res.status = 0;
-      LOG_PRINT_L0("RPC Request: on_supernode_blockchain_based_list: end");
+      MDEBUG("RPC Request: on_supernode_blockchain_based_list: end");
       return true;
   }
 
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_broadcast(const COMMAND_RPC_BROADCAST::request &req, COMMAND_RPC_BROADCAST::response &res, json_rpc::error &error_resp)
   {
-      LOG_PRINT_L0("RPC Request: on_broadcast: start");
+      MDEBUG("RPC Request: on_broadcast: start");
       if (!check_core_busy())
       {
           error_resp.code = CORE_RPC_ERROR_CODE_CORE_BUSY;
@@ -1838,14 +1838,14 @@ namespace cryptonote
 
       m_p2p.do_broadcast(req);
       res.status = 0;
-      LOG_PRINT_L0("RPC Request: on_broadcast: end");
+      MDEBUG("RPC Request: on_broadcast: end");
       return true;
   }
 
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_multicast(const COMMAND_RPC_MULTICAST::request &req, COMMAND_RPC_MULTICAST::response &res, json_rpc::error &error_resp)
   {
-      LOG_PRINT_L0("RPC Request: on_multicast: start");
+      MDEBUG("RPC Request: on_multicast: start");
       if (!check_core_busy())
       {
           error_resp.code = CORE_RPC_ERROR_CODE_CORE_BUSY;
@@ -1875,14 +1875,14 @@ namespace cryptonote
 
       m_p2p.do_multicast(req);
       res.status = 0;
-      LOG_PRINT_L0("RPC Request: on_multicast: end");
+      MDEBUG("RPC Request: on_multicast: end");
       return true;
   }
 
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_unicast(const COMMAND_RPC_UNICAST::request &req, COMMAND_RPC_UNICAST::response &res, json_rpc::error &error_resp)
   {
-      LOG_PRINT_L0("RPC Request: on_unicast: start");
+      MDEBUG("RPC Request: on_unicast: start");
       if (!check_core_busy())
       {
           error_resp.code = CORE_RPC_ERROR_CODE_CORE_BUSY;
@@ -1911,14 +1911,14 @@ namespace cryptonote
 
       m_p2p.do_unicast(req);
       res.status = 0;
-      LOG_PRINT_L0("RPC Request: on_unicast: end");
+      MDEBUG("RPC Request: on_unicast: end");
       return true;
   }
 
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_get_tunnels(const COMMAND_RPC_TUNNEL_DATA::request &req, COMMAND_RPC_TUNNEL_DATA::response &res, json_rpc::error &error_resp)
   {
-      LOG_PRINT_L0("RPC Request: on_get_tunnels: start");
+      MDEBUG("RPC Request: on_get_tunnels: start");
       res.supernodes_addresses = m_p2p.get_supernodes_addresses();
       res.tunnels = m_p2p.get_tunnels();
 
@@ -1926,7 +1926,7 @@ namespace cryptonote
       if (res.supernodes_addresses.size() > 0)
           res.supernode_address = res.supernodes_addresses[0];
 
-      LOG_PRINT_L0("RPC Request: on_get_tunnels: end");
+      MDEBUG("RPC Request: on_get_tunnels: end");
       return true;
   }
 

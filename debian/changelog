@@ -1,5 +1,4 @@
-
-graft (1.7.4+gc1-1) bionic; urgency=medium
+graft (1.7.4+gc1-1) unstable; urgency=medium
 
   [ ku4eto ]
   * Update miner.cpp

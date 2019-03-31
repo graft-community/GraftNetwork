@@ -1,4 +1,4 @@
-graft (1.7.4+gc1-1~deb9) bionic; urgency=medium
+graft (1.7.4+gc1-1~deb9) stretch; urgency=medium
 
   [ ku4eto ]
   * Update miner.cpp

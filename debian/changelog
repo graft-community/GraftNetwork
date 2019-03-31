@@ -1,3 +1,24 @@
+graft (1.7.4+gc1-1~ubuntu16.04) bionic; urgency=medium
+
+  [ ku4eto ]
+  * Update miner.cpp
+
+  [ Leny Kholodov ]
+  * StakeTransactionStorage lock
+  * Move messages to debug level
+
+  [ ku4eto ]
+  * Update miner.cpp
+
+  [ Ilya Kitaev ]
+  * version bump
+
+  [ Jason Rhinelander ]
+  * Adds staking ability to transfer_split RPC
+  * Don't provide RTA-related RPC endpoints in restricted mode
+
+ -- gareth <gareth@ubuntudesktopcloud>  Sun, 31 Mar 2019 21:07:25 +0200
+
 graft (1.7.3+gc2-1~ubuntu16.04) xenial; urgency=medium
 
   * Lower log level of supernode requests

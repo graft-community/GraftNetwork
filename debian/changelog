@@ -1,3 +1,31 @@
+graft (1.7.5+gc1-1~deb9) stretch; urgency=medium
+
+  [ ku4eto ]
+  * Update miner.cpp
+
+  [ Leny Kholodov ]
+  * StakeTransactionStorage lock
+  * Move messages to debug level
+
+  [ Ilya Kitaev ]
+  * version bump
+
+  [ Leny Kholodov ]
+  * Fix crash with direct access to BlockchainDB from StakeTransactionProcessor
+
+  [ Ilya Kitaev ]
+  * revert wrong HF version for halved block reward. fixes #267
+
+  [ EDDragonWolf ]
+  * Added processing for large transfers
+
+  [ Ilya Kitaev ]
+  * release 1.7.5 version bump
+
+  [ fez ]
+
+ -- fez <fez@debianlocal>  Sun, 21 Apr 2019 13:21:04 +0200
+
 graft (1.7.4+gc2-1~deb9) stretch; urgency=medium
 
   [ Jason Rhinelander ]

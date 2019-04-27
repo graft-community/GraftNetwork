@@ -1,3 +1,9 @@
+graft (1.7.5+gc2-1~ubuntu18.04) bionic; urgency=medium
+
+  * Avoid deadlock
+
+ -- Jason Rhinelander <jason@imaginary.ca>  Sat, 27 Apr 2019 12:27:18 -0300
+
 graft (1.7.5+gc1-1~ubuntu18.04) bionic; urgency=medium
 
   [ ku4eto ]

@@ -1,3 +1,16 @@
+graft (1.7.6+gc1-1~ubuntu16.04) xenial; urgency=medium
+
+  [ Jason Rhinelander ]
+  * Avoid deadlock
+
+  [ Ilya Kitaev ]
+  * release 1.7.6 version bump
+
+  [ Jason Rhinelander ]
+  * Add carefulness
+
+ -- Jason Rhinelander <jason@imaginary.ca>  Thu, 02 May 2019 17:56:28 -0300
+
 graft (1.7.5+gc2-1~ubuntu16.04) xenial; urgency=medium
 
   * Avoid deadlock

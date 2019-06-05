@@ -54,6 +54,7 @@ using namespace epee;
 #include "daemonizer/daemonizer.h"
 #include "wallet/wallet_errors.h"
 #include "utils/cryptmsg.h"
+#include "graft_rta_config.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.rpc"

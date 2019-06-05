@@ -521,7 +521,7 @@ ExternalProject_Add(generate_translations_header
   CMAKE_ARGS -DLRELEASE_PATH=${LRELEASE_PATH}
   INSTALL_COMMAND cmake -E echo "")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/translations")
-add_subdirectory(external)
+add_subdirectory(external EXCLUDE_FROM_ALL)
 
 # Final setup for libunbound
 include_directories(${UNBOUND_INCLUDE})
@@ -1014,6 +1014,7 @@ if(SODIUM_LIBRARY)
 endif()
 
 add_subdirectory(contrib)
+set(DISABLE_SUPERNODE TRUE)
 add_subdirectory(src)
 
 if(BUILD_TESTS)
@@ -1052,3 +1053,15 @@ option(INSTALL_VENDORED_LIBUNBOUND "Install libunbound binary built from source 
 
 CHECK_C_COMPILER_FLAG(-std=c11 HAVE_C11)
 
+set(CPACK_GENERATOR "DEB")
+set(CPACK_PACKAGE_VENDOR "graft.community")
+set(CPACK_PACKAGE_VERSION_MAJOR 1)
+set(CPACK_PACKAGE_VERSION_MINOR 8)
+set(CPACK_PACKAGE_VERSION_PATCH 1)
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Jason Rhinelander <jason@imaginary.ca>")
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+set(DEB_REVISION "1" CACHE STRING "debian package revision")
+set(CPACK_DEBIAN_PACKAGE_RELEASE ${DEB_REVISION})
+
+include(CPack)
